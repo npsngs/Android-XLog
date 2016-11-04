@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:background="#fffefefe"
+        android:id="@+id/rl_title"
+        android:layout_width="match_parent"
+        android:layout_height="40dp">
+        <TextView
+            android:id="@+id/tv_title_center"
+            android:gravity="center"
+            android:singleLine="true"
+            android:layout_centerInParent="true"
+            android:textSize="14sp"
+            android:textColor="#676767"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:paddingRight="10dp"
+            android:paddingLeft="10dp"
+            android:id="@+id/tv_title_right"
+            android:layout_marginRight="12dp"
+            android:gravity="center"
+            android:singleLine="true"
+            android:layout_alignParentRight="true"
+            android:textSize="14sp"
+            android:textColor="@drawable/sl_debug_btn_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+    </RelativeLayout>
+    
+    
+    <ListView
+        android:layout_below="@+id/rl_title"
+        android:layout_alignParentLeft="true"
+        android:layout_above="@+id/ll_btn"
+        android:id="@+id/lv"
+        android:background="#ffefefef"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </ListView>
+
+    <LinearLayout
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:id="@+id/ll_btn"
+        android:background="#fff3f3f3"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="44dp">
+        <TextView
+            android:id="@+id/tv_back"
+            android:text="◁"
+            android:layout_weight="1"
+            android:paddingRight="10dp"
+            android:paddingLeft="10dp"
+            android:textColor="@drawable/sl_debug_btn_txt"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
+
+        <View
+            android:layout_margin="2dp"
+            android:layout_width="0.5dp"
+            android:layout_height="match_parent"
+            android:background="#ffc3c3c3"/>
+
+        <TextView
+            android:id="@+id/tv_config_list"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:layout_weight="1"
+            android:textStyle="bold"
+            android:text="≡≡"
+            android:textColor="@drawable/sl_debug_btn_txt"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
+        <View
+            android:layout_margin="2dp"
+            android:layout_width="0.5dp"
+            android:layout_height="match_parent"
+            android:background="#ffc3c3c3"/>
+
+
+        <TextView
+            android:id="@+id/tv_log_list"
+            android:layout_weight="1"
+            android:text="❀(⊙ö⊙)❀"
+            android:textColor="@drawable/sl_debug_btn_txt"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
+        <View
+            android:layout_margin="2dp"
+            android:layout_width="0.5dp"
+            android:layout_height="match_parent"
+            android:background="#ffc3c3c3"/>
+
+
+        <TextView
+            android:id="@+id/tv_error_list"
+            android:layout_weight="1"
+            android:text="☠(+﹏+)☠"
+            android:textColor="@drawable/sl_debug_btn_txt"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+    <TextView
+        android:textIsSelectable="true"
+        android:background="#252625"
+        android:visibility="visible"
+        android:padding="10dp"
+        android:textColor="#545454"
+        android:textSize="12sp"
+        android:layout_above="@+id/ll_btn"
+        android:id="@+id/tv_message_detail"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"/>
+
+</RelativeLayout>
