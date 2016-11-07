@@ -119,17 +119,20 @@
             android:layout_height="match_parent" />
     </LinearLayout>
 
-    <TextView
-        android:textIsSelectable="true"
+    <com.npsngs.debug.HVScrollView
         android:background="#252625"
         android:visibility="visible"
-        android:padding="10dp"
-        android:textColor="#545454"
-        android:textSize="12sp"
+        android:id="@+id/hsv_message_detail"
         android:layout_above="@+id/ll_btn"
-        android:id="@+id/tv_message_detail"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"/>
-
+        android:layout_height="match_parent">
+        <TextView
+            android:padding="10dp"
+            android:lineSpacingExtra="2sp"
+            android:textColor="#545454"
+            android:textSize="12sp"
+            android:id="@+id/tv_message_detail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </com.npsngs.debug.HVScrollView>
 </RelativeLayout>

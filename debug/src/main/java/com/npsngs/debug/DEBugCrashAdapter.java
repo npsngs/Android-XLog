@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.io.File;
@@ -41,7 +42,7 @@ class DEBugCrashAdapter extends Adapter<File> {
         CrashHolder crashHolder;
         if(v == null){
             TextView tv = new TextView(getContext());
-            tv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+            tv.setLayoutParams(new ListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT));
             tv.setTextSize(12f);
             tv.setClickable(false);

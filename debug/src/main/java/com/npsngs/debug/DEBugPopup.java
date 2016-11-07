@@ -17,6 +17,7 @@ class DEBugPopup implements View.OnClickListener {
     private TextView tv_config_list, tv_log_list, tv_error_list, tv_message_detail,
             tv_title_right, tv_title_center;
     private ListView lv;
+    private HVScrollView hsv_message_detail;
     private DEBugConfigAdapter configAdapter;
     private DEBugLogAdapter logAdapter;
     private DEBugCrashAdapter crashAdapter;
@@ -65,7 +66,10 @@ class DEBugPopup implements View.OnClickListener {
         tv_log_list = (TextView) root.findViewById(R.id.tv_log_list);
         tv_error_list = (TextView) root.findViewById(R.id.tv_error_list);
         tv_message_detail = (TextView) root.findViewById(R.id.tv_message_detail);
+        hsv_message_detail = (HVScrollView) root.findViewById(R.id.hsv_message_detail);
         tv_message_detail.setMovementMethod(LinkMovementMethod.getInstance());
+
+
         tv_title_right = (TextView) root.findViewById(R.id.tv_title_right);
         tv_title_center = (TextView) root.findViewById(R.id.tv_title_center);
 
@@ -93,8 +97,8 @@ class DEBugPopup implements View.OnClickListener {
     public void onClick(View v) {
         int id = v.getId();
         if(R.id.tv_back == id) {
-            if (tv_message_detail.getVisibility() == View.VISIBLE) {
-                tv_message_detail.setVisibility(View.GONE);
+            if (hsv_message_detail.getVisibility() == View.VISIBLE) {
+                hsv_message_detail.setVisibility(View.GONE);
             } else {
                 dismiss();
             }
@@ -121,7 +125,7 @@ class DEBugPopup implements View.OnClickListener {
     private int currentPage;
     private void switchPage(int page){
         currentPage = page;
-        tv_message_detail.setVisibility(View.GONE);
+        hsv_message_detail.setVisibility(View.GONE);
 
         tv_config_list.setSelected(false);
         tv_log_list.setSelected(false);
@@ -160,7 +164,7 @@ class DEBugPopup implements View.OnClickListener {
         onShowParseText = new OnShowParseText() {
             @Override
             public void showParsedText(String text, int color) {
-                tv_message_detail.setVisibility(View.VISIBLE);
+                hsv_message_detail.setVisibility(View.VISIBLE);
                 tv_message_detail.setTextColor(color);
                 tv_message_detail.setText(parseText(text));
             }

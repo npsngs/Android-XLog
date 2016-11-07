@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TextView;
 
 
@@ -22,7 +23,7 @@ class DEBugLogAdapter extends Adapter<String> implements DEBug.OnAddLogListener 
         LogHolder logHolder;
         if(null == v){
             TextView tv = new TextView(getContext());
-            tv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            tv.setLayoutParams(new ListView.LayoutParams(ListView.LayoutParams.MATCH_PARENT, ListView.LayoutParams.WRAP_CONTENT));
             tv.setTextSize(12f);
             tv.setEllipsize(TextUtils.TruncateAt.END);
             tv.setClickable(false);
