@@ -160,18 +160,32 @@ class DEBugPopup implements View.OnClickListener {
     interface OnShowParseText{
         void showParsedText(String text, int color);
     }
+
+    private TextParseEngine textParseEngine;
     private void initOnShowParseText(){
         onShowParseText = new OnShowParseText() {
             @Override
             public void showParsedText(String text, int color) {
+                if(null == textParseEngine){
+                    initParseEngine();
+                }
                 hsv_message_detail.setVisibility(View.VISIBLE);
+                hsv_message_detail.scrollTo(0,0);
                 tv_message_detail.setTextColor(color);
-                tv_message_detail.setText(parseText(text));
+
+                textParseEngine.startParse(text);
             }
         };
     }
 
-    private SpannableStringBuilder parseText(String text){
-        return new SpannableStringBuilder(text);
+    private void initParseEngine(){
+        textParseEngine = new TextParseEngine() {
+            @Override
+            void onUpdateParseResult(SpannableStringBuilder spannableBuilder) {
+                tv_message_detail.setText(spannableBuilder);
+            }
+        };
+        textParseEngine.add(new URLParser());
+        textParseEngine.add(new JsonParser());
     }
 }

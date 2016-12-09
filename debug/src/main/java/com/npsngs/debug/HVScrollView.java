@@ -20,7 +20,7 @@ import android.widget.Scroller;
 /**
  * Reference to ScrollView and HorizontalScrollView
  */
-public class HVScrollView extends FrameLayout {
+class HVScrollView extends FrameLayout {
     static final int ANIMATED_SCROLL_GAP = 250;
 
     static final float MAX_SCROLL_FACTOR = 0.5f;
@@ -321,6 +321,13 @@ public class HVScrollView extends FrameLayout {
     public boolean dispatchKeyEvent(KeyEvent event) {
         // Let the focused view and/or our descendants get the key first
         return super.dispatchKeyEvent(event) || executeKeyEvent(event);
+    }
+
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        super.dispatchTouchEvent(ev);
+        return true;
     }
 
     /**
