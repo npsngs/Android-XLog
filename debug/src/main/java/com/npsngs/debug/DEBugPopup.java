@@ -9,11 +9,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import java.util.Stack;
 
 class DEBugPopup implements View.OnClickListener {
     private Activity activity;
     private PopupWindow popupWindow;
+    private RelativeLayout rl_panel_container;
     private TextView tv_config_list, tv_log_list, tv_error_list, tv_message_detail,
             tv_title_right, tv_title_center;
     private ListView lv;
@@ -27,7 +31,7 @@ class DEBugPopup implements View.OnClickListener {
 
     DEBugPopup(Activity activity) {
         this.activity = activity;
-        View root = View.inflate(activity, R.layout.pop_debug_window, null);
+        View root = View.inflate(activity, R.layout.ddebug_pop_window, null);
         initView(root);
         popupWindow = new PopupWindow(root, ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
@@ -38,7 +42,6 @@ class DEBugPopup implements View.OnClickListener {
 
     void show(){
         show(DEBug.PAGE_CONFIG);
-
     }
 
     void show(int page){
@@ -67,6 +70,7 @@ class DEBugPopup implements View.OnClickListener {
         tv_error_list = (TextView) root.findViewById(R.id.tv_error_list);
         tv_message_detail = (TextView) root.findViewById(R.id.tv_message_detail);
         hsv_message_detail = (HVScrollView) root.findViewById(R.id.hsv_message_detail);
+        rl_panel_container = (RelativeLayout) root.findViewById(R.id.rl_panel_container);
         tv_message_detail.setMovementMethod(LinkMovementMethod.getInstance());
 
 
@@ -97,10 +101,12 @@ class DEBugPopup implements View.OnClickListener {
     public void onClick(View v) {
         int id = v.getId();
         if(R.id.tv_back == id) {
-            if (hsv_message_detail.getVisibility() == View.VISIBLE) {
-                hsv_message_detail.setVisibility(View.GONE);
-            } else {
-                dismiss();
+            if(!dismissPanel()) {
+                if (hsv_message_detail.getVisibility() == View.VISIBLE) {
+                    hsv_message_detail.setVisibility(View.GONE);
+                } else {
+                    dismiss();
+                }
             }
         } else if(R.id.tv_title_right == id){
             if(currentPage == DEBug.PAGE_LOGS){
@@ -108,10 +114,13 @@ class DEBugPopup implements View.OnClickListener {
                 logAdapter.clear();
             }
         } else if(R.id.tv_config_list == id){
+            dismissAllPanel();
             switchPage(DEBug.PAGE_CONFIG);
         } else if(R.id.tv_log_list == id){
+            dismissAllPanel();
             switchPage(DEBug.PAGE_LOGS);
         } else if(R.id.tv_error_list == id){
+            dismissAllPanel();
             switchPage(DEBug.PAGE_CRASH);
         }
     }
@@ -185,7 +194,57 @@ class DEBugPopup implements View.OnClickListener {
                 tv_message_detail.setText(spannableBuilder);
             }
         };
+
+        textParseEngine.add(new JsonParser(){
+            @Override
+            protected void onJsonClick(String json) {
+                showFormatJson(json);
+            }
+        });
+
         textParseEngine.add(new URLParser());
-        textParseEngine.add(new JsonParser());
+    }
+
+
+    private Stack<PanelBase> panelStack;
+    private void showFormatJson(String json){
+        JsonPanel jsonPanel = new JsonPanel(json);
+        if(panelStack == null){
+            panelStack = new Stack<>();
+        }
+
+        rl_panel_container.setVisibility(View.VISIBLE);
+        jsonPanel.attachTo(rl_panel_container);
+        panelStack.add(jsonPanel);
+    }
+
+    private boolean dismissPanel(){
+        if(panelStack == null || panelStack.isEmpty()){
+            rl_panel_container.setVisibility(View.INVISIBLE);
+            return false;
+        }
+
+        PanelBase panel = panelStack.pop();
+        if(null != panel){
+            panel.dismiss();
+            if(panelStack.isEmpty()){
+                rl_panel_container.setVisibility(View.INVISIBLE);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private void dismissAllPanel(){
+        if(panelStack != null && !panelStack.isEmpty()){
+            while (!panelStack.isEmpty()){
+                PanelBase panel = panelStack.pop();
+                if(null != panel && panel.isShow()){
+                    panel.dismiss();
+                }
+            }
+        }
+
+        rl_panel_container.setVisibility(View.INVISIBLE);
     }
 }

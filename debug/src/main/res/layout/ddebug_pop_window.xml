@@ -135,4 +135,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
     </com.npsngs.debug.HVScrollView>
+
+
+    <RelativeLayout
+        android:visibility="invisible"
+        android:layout_above="@+id/ll_btn"
+        android:id="@+id/rl_panel_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </RelativeLayout>
 </RelativeLayout>

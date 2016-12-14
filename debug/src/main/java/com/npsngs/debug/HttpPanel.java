@@ -1,0 +1,16 @@
+package com.npsngs.debug;
+
+import android.view.View;
+import android.view.ViewGroup;
+
+class HttpPanel extends PanelBase {
+    private String url;
+    HttpPanel(String url) {
+        this.url = url;
+    }
+
+    @Override
+    protected View createView(ViewGroup parent) {
+        return null;
+    }
+}
