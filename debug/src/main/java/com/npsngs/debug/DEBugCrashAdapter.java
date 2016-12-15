@@ -22,7 +22,7 @@ class DEBugCrashAdapter extends Adapter<File> {
     }
 
     public void loadData() {
-        File errLog = new File(DEBug.getLogSaveDir());
+        File errLog = new File(DEBug.getCrashSaveDir());
         if (!errLog.exists() || !errLog.isDirectory()) {
             return;
         }

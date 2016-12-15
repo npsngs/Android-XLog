@@ -6,26 +6,68 @@ import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.util.Log;
 
+import java.io.File;
 import java.util.Vector;
 
 public class DEBug {
     private static int flag =0x00;
     private static SharedPreferences sp;
     private static final Vector<String> logs = new Vector<>();
+    private static String logSaveDir = null;
+    private static String crashSaveDir = null;
+    private static DEBugLogReceiver logReceiver = null;
+    private static DEBugLogNotifier logNotifier = null;
+    private static DEBugLogStorer logStorer = null;
 
     public static void init(Context context){
+        init(context,null);
+    }
+
+    public static void init(Context context, String saveDir){
         sp = context.getSharedPreferences("ui_libs",Context.MODE_PRIVATE);
         flag = sp.getInt("debug_flags", 0);
+        logReceiver = new DEBugLogReceiver() {
+            @Override
+            void onReceiveLog(String log) {
+                onAddLog(log);
+            }
+        };
+        if(isErrorON() || isWarnON() || isDebugON()){
+            logReceiver.init();
+        }
+
+        if(!TextUtils.isEmpty(saveDir)){
+            File pathFile = new File(saveDir);
+            if(!pathFile.exists()){
+                pathFile.mkdirs();
+            }
+
+            File crashSaveFile = new File(pathFile, "crash");
+            if(!crashSaveFile.exists()){
+                crashSaveFile.mkdir();
+            }
+            crashSaveDir = crashSaveFile.getPath();
+            Thread.setDefaultUncaughtExceptionHandler(new CrashHandler(Thread
+                    .getDefaultUncaughtExceptionHandler(), crashSaveDir));
+
+
+            File logSaveFile = new File(pathFile, "log");
+            if(!logSaveFile.exists()){
+                logSaveFile.mkdir();
+            }
+            logSaveDir = logSaveFile.getPath();
+
+            if(isSaveON()){
+                logStorer = new DEBugLogStorer(logSaveDir);
+            }
+        }
     }
 
-    private static String logSaveDir;
-    public static void initCrashDebug(String logSaveDir){
-        DEBug.logSaveDir = logSaveDir;
-        Thread.setDefaultUncaughtExceptionHandler(new CrashHandler(Thread
-                .getDefaultUncaughtExceptionHandler(), logSaveDir));
+    static String getCrashSaveDir() {
+        return crashSaveDir;
     }
 
-    public static String getLogSaveDir() {
+    static String getLogSaveDir() {
         return logSaveDir;
     }
 
@@ -81,17 +123,25 @@ public class DEBug {
         }else{
             log = String.format("%s\t\t%s", lvl,msg);
         }
-        logs.add(log);
 
-        if(null != onAddLogListener){
-            onAddLogListener.onLogAdded(log);
+        logReceiver.receiveLog(log);
+    }
+
+    private static void onAddLog(String log){
+        logs.add(log);
+        if(isSaveON()){
+            logStorer.saveLog(log);
+        }
+
+        if(null != logNotifier){
+            logNotifier.onNotifyLogAdd(log);
         }
     }
 
     public static void clearLog(){
         logs.clear();
-        if(null != onAddLogListener){
-            onAddLogListener.onLogClear();
+        if(null != logNotifier){
+            logNotifier.onNotifyLogClear();
         }
     }
 
@@ -100,43 +150,46 @@ public class DEBug {
     }
 
 
-    public static boolean isDebugON(){
+    static boolean isDebugON(){
         return 0 != (flag&1);
     }
 
-    public static boolean switchDebug(){
+    static boolean switchDebug(){
         if(isDebugON()){
             flag = flag&0xfffffffe;
         }else{
             flag = flag|0x00000001;
+            logReceiver.init();
         }
         saveConfig();
         return isDebugON();
     }
 
-    public static boolean isWarnON(){
+    static boolean isWarnON(){
         return 0 != (flag&2);
     }
 
-    public static boolean switchWarn(){
+    static boolean switchWarn(){
         if(isWarnON()){
             flag = flag&0xfffffffd;
         }else{
             flag = flag|0x00000002;
+            logReceiver.init();
         }
         saveConfig();
         return isWarnON();
     }
 
-    public static boolean isErrorON(){
+    static boolean isErrorON(){
         return 0 != (flag&4);
     }
 
-    public static boolean switchError(){
+    static boolean switchError(){
         if(isErrorON()){
             flag = flag&0xfffffffb;
         }else{
             flag = flag|0x00000004;
+            logReceiver.init();
         }
         saveConfig();
         return isErrorON();
@@ -157,11 +210,11 @@ public class DEBug {
     }
 
 
-    public static boolean isLogcatON(){
+    static boolean isLogcatON(){
         return 0 != (flag&16);
     }
 
-    public static boolean switchLogcat(){
+    static boolean switchLogcat(){
         if(isLogcatON()){
             flag = flag&0xffffffef;
         }else{
@@ -180,6 +233,9 @@ public class DEBug {
             flag = flag&0xffffffdf;
         }else{
             flag = flag|0x00000020;
+            if(null == logStorer){
+                logStorer = new DEBugLogStorer(logSaveDir);
+            }
         }
         saveConfig();
         return isSaveON();
@@ -191,12 +247,18 @@ public class DEBug {
     }
 
 
+    static void setOnLogChangeListener(DEBug.OnLogChangeListener onLogChangeListener) {
+        if(null == onLogChangeListener){
+            return;
+        }
 
-    private static OnAddLogListener onAddLogListener = null;
-    static void setDebugListener(OnAddLogListener debugListener) {
-        DEBug.onAddLogListener = debugListener;
+        if(null == logNotifier){
+            logNotifier = new DEBugLogNotifier();
+        }
+        logNotifier.setOnLogChangeListener(onLogChangeListener);
     }
-    interface OnAddLogListener{
+
+    interface OnLogChangeListener{
         void onLogAdded(String log);
         void onLogClear();
     }

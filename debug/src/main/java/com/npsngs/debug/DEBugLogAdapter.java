@@ -9,12 +9,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 
-class DEBugLogAdapter extends Adapter<String> implements DEBug.OnAddLogListener {
+class DEBugLogAdapter extends Adapter<String> implements DEBug.OnLogChangeListener {
     private final int[] logColors = {0xffff2200,0xffe38204,0xff188b02};
     DEBugLogAdapter(Context mContext) {
         super(mContext);
         setData(DEBug.getLogs());
-        DEBug.setDebugListener(this);
+        DEBug.setOnLogChangeListener(this);
     }
 
     @Override
@@ -43,7 +43,7 @@ class DEBugLogAdapter extends Adapter<String> implements DEBug.OnAddLogListener 
     class LogHolder implements View.OnClickListener, View.OnLongClickListener{
         TextView tv;
         int position;
-        public LogHolder(TextView tv) {
+        LogHolder(TextView tv) {
             this.tv = tv;
             tv.setOnClickListener(this);
             tv.setOnLongClickListener(this);
@@ -102,7 +102,7 @@ class DEBugLogAdapter extends Adapter<String> implements DEBug.OnAddLogListener 
     }
 
     private DEBugPopup.OnShowParseText onShowParseText;
-    public void setOnShowParseText(DEBugPopup.OnShowParseText onShowParseText) {
+    void setOnShowParseText(DEBugPopup.OnShowParseText onShowParseText) {
         this.onShowParseText = onShowParseText;
     }
 }

@@ -101,8 +101,14 @@ class JsonPanel extends PanelBase{
         if(null != array){
             builder.append("\n");
             if(array.length() > 0){
+                Object value;
                 for(int i=0;i<array.length();i++){
-                    Object value = array.get(i);
+                    try{
+                        value = array.get(i);
+                    }catch (Exception e){
+                        continue;
+                    }
+
                     if(null != value){
                         if(value instanceof JSONObject){
                             formatJsonObject(space, (JSONObject) value, builder);
@@ -113,8 +119,6 @@ class JsonPanel extends PanelBase{
                         }else{
                             builder.append("\"").append(value.toString()).append("\"");
                         }
-                    }else{
-                        builder.append("null");
                     }
                     builder.append(space).append(",\n");
                 }

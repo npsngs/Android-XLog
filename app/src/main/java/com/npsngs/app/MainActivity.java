@@ -15,16 +15,16 @@ public class MainActivity extends Activity implements View.OnClickListener{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        DEBug.init(this);
-        DEBug.initCrashDebug(getCrashDir());
+
         findViewById(R.id.btn_open).setOnClickListener(this);
         findViewById(R.id.btn_sendLog).setOnClickListener(this);
         findViewById(R.id.btn_crash).setOnClickListener(this);
 
+        DEBug.init(this, getSaveDir());
     }
 
-    private String getCrashDir(){
-        return Environment.getExternalStorageDirectory().getAbsolutePath();
+    private String getSaveDir(){
+        return Environment.getExternalStorageDirectory().getAbsolutePath()+"/NDebug";
     }
 
     @Override
@@ -41,7 +41,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 break;
             case R.id.btn_sendLog:
                 DEBug.e("test",".view.ViewPager.setCurrentItem(ViewPager.java:562)\n" +
-                        "11-03 18:27:43.042 14150-14150/com.yxd.live W/System.err:     at com.yxd.live.vu.modules.HomeBannerVu.autoRun(HomeBannerVu.java:172)\n" +
+                        "11-03 [{\"key\":\"xiaoming\"},{\"value\":\"hahayixiao\",\"name\":\"xxoo\"},{x}]18:27:43.042 14150-14150/com.yxd.live W/System.err:     at com.yxd.live.vu.modules.HomeBannerVu.autoRun(HomeBannerVu.java:172)\n" +
                         "11-03 18:27:43.042 14150-14150/com.yxd.live W/System.err:     at com.yxd.live.vu.modules.HomeBannerVu$1.run(HomeBannerVu.java:63)\n" +
                         "11-03 18:27:43.042 14150-{x}141{{{{}50/com.yxd.{\"bb\":{\"s\":\"http://www.baidu.com\"},\"aa\":\"c\"}live W/System.err:     at android.os.http://www.sss.com?ss1=1223,Handler.handleCallback(Handler.java:739)\n" +
                         "11-03 18:27:43.042 14150-14150/com.yxd.live W/System.err:     at android.os.Handler.dispatchMessage(Handler.java:95)\n" +
