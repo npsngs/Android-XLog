@@ -90,7 +90,7 @@ public class DEBug {
     }
 
     public static void w(String log){
-        d("", log);
+        w("", log);
     }
 
     public static void w(String tag, String log){
@@ -103,7 +103,7 @@ public class DEBug {
     }
 
     public static void e(String log){
-        d("", log);
+        e("", log);
     }
 
     public static void e(String tag, String log){

@@ -10,7 +10,7 @@ class HttpPanel extends PanelBase {
     }
 
     @Override
-    protected View createView(ViewGroup parent) {
+    protected View onCreateView(ViewGroup parent) {
         return null;
     }
 }

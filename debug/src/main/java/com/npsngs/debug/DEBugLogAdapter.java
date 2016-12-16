@@ -9,7 +9,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 
-class DEBugLogAdapter extends Adapter<String> implements DEBug.OnLogChangeListener {
+class DEBugLogAdapter extends FilterAdapter<String> implements DEBug.OnLogChangeListener {
     private final int[] logColors = {0xffff2200,0xffe38204,0xff188b02};
     DEBugLogAdapter(Context mContext) {
         super(mContext);

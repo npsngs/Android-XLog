@@ -22,7 +22,7 @@ class JsonPanel extends PanelBase{
     }
 
     @Override
-    protected View createView(ViewGroup parent) {
+    protected View onCreateView(ViewGroup parent) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View v = inflater.inflate(R.layout.ddebug_json_panel, parent, false);
         final TextView tv_message = (TextView) v.findViewById(R.id.tv_message_detail);
@@ -131,5 +131,6 @@ class JsonPanel extends PanelBase{
             builder.append(" ]\n");
         }
     }
+
 
 }

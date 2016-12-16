@@ -1,12 +1,17 @@
 package com.npsngs.debug;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FilenameFilter;
@@ -14,14 +19,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
-class DEBugCrashAdapter extends Adapter<File> {
+class DEBugCrashAdapter extends Adapter<DEBugCrashAdapter.FileEntry> {
     DEBugCrashAdapter(Context mContext) {
         super(mContext);
     }
 
-    public void loadData() {
+    void loadData() {
         File errLog = new File(DEBug.getCrashSaveDir());
         if (!errLog.exists() || !errLog.isDirectory()) {
             return;
@@ -32,7 +39,54 @@ class DEBugCrashAdapter extends Adapter<File> {
         if(null != fs && fs.length > 0){
             Collections.addAll(files, fs);
             Collections.sort(files, comparator);
-            setData(files);
+            final List<FileEntry> fileEntries = new ArrayList<>(files.size());
+            for(File f:files){
+                FileEntry fileEntry = new FileEntry();
+                fileEntry.file = f;
+                fileEntry.date = f.getName().replace("crash_", "").replace(".txt", "");
+                fileEntries.add(fileEntry);
+            }
+            setData(fileEntries);
+
+            if(fileEntries.isEmpty()){
+                return;
+            }
+
+            new Thread(){
+                @Override
+                public void run() {
+                    Handler handler = new Handler(Looper.getMainLooper()){
+                        @Override
+                        public void handleMessage(Message msg) {
+                            DEBugCrashAdapter.this.notifyDataSetInvalidated();
+                        }
+                    };
+
+                    Pattern pattern = Pattern.compile("\\.([\\w]+?)(:|$)");
+
+                    for(FileEntry fileEntry:fileEntries){
+                        try {
+                            FileReader fr = new FileReader(fileEntry.file);
+                            BufferedReader br = new BufferedReader(fr);
+                            String topLine = br.readLine();
+                            Matcher matcher = pattern.matcher(topLine);
+                            if(matcher.find()){
+                                fileEntry.brief = matcher.group(1);
+                            }
+
+                            if(!TextUtils.isEmpty(fileEntry.brief)){
+                                handler.sendEmptyMessage(0);
+                            }
+
+                            br.close();
+                            fr.close();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }.start();
+
         }
     }
 
@@ -50,7 +104,7 @@ class DEBugCrashAdapter extends Adapter<File> {
             int padding = DEBugUtils.dp2px(getContext(), 10);
             tv.setPadding(padding, padding, padding, padding);
             tv.setTextColor(0xffff2200);
-            tv.setSingleLine(false);
+            tv.setSingleLine(true);
             tv.setClickable(false);
             crashHolder = new CrashHolder(tv);
             tv.setTag(crashHolder);
@@ -66,7 +120,7 @@ class DEBugCrashAdapter extends Adapter<File> {
     class CrashHolder implements View.OnClickListener, View.OnLongClickListener{
         TextView tv;
         int position;
-        public CrashHolder(TextView tv) {
+        CrashHolder(TextView tv) {
             this.tv = tv;
             tv.setOnClickListener(this);
             tv.setOnLongClickListener(this);
@@ -74,8 +128,12 @@ class DEBugCrashAdapter extends Adapter<File> {
 
         void bind(int position){
             this.position = position;
-            File file = getItem(position);
-            tv.setText(file.getName());
+            FileEntry fileEntry = getItem(position);
+            if(!TextUtils.isEmpty(fileEntry.brief)){
+                tv.setText(String.format("%s  [%s]",  fileEntry.date, fileEntry.brief));
+            }else{
+                tv.setText(fileEntry.file.getName());
+            }
         }
 
         @Override
@@ -98,7 +156,7 @@ class DEBugCrashAdapter extends Adapter<File> {
     private final FilenameFilter filter = new FilenameFilter() {
         @Override
         public boolean accept(File dir, String filename) {
-            return filename.startsWith("errlog");
+            return filename.startsWith("crash_");
         }
     };
 
@@ -110,14 +168,14 @@ class DEBugCrashAdapter extends Adapter<File> {
     };
 
     private DEBugPopup.OnShowParseText onShowParseText;
-    public void setOnShowParseText(DEBugPopup.OnShowParseText onShowParseText) {
+    void setOnShowParseText(DEBugPopup.OnShowParseText onShowParseText) {
         this.onShowParseText = onShowParseText;
     }
 
     private String getErrStr(int pos){
         try{
-            File file = getItem(pos);
-            FileReader fr = new FileReader(file);
+            FileEntry fileEntry = getItem(pos);
+            FileReader fr = new FileReader(fileEntry.file);
             char[] buffer = new char[1024];
             StringBuilder builder = new StringBuilder();
             int ret;
@@ -134,4 +192,10 @@ class DEBugCrashAdapter extends Adapter<File> {
         return "";
     }
 
+
+    class FileEntry{
+        File file;
+        String brief = null;
+        String date = null;
+    }
 }

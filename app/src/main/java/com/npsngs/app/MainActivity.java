@@ -10,6 +10,8 @@ import com.npsngs.debug.DEBug;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.IllegalFormatException;
+
 public class MainActivity extends Activity implements View.OnClickListener{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,7 +20,12 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
         findViewById(R.id.btn_open).setOnClickListener(this);
         findViewById(R.id.btn_sendLog).setOnClickListener(this);
-        findViewById(R.id.btn_crash).setOnClickListener(this);
+        findViewById(R.id.btn_crash1).setOnClickListener(this);
+        findViewById(R.id.btn_crash2).setOnClickListener(this);
+        findViewById(R.id.btn_crash3).setOnClickListener(this);
+
+        findViewById(R.id.btn_start_test).setOnClickListener(this);
+        findViewById(R.id.btn_stop_test).setOnClickListener(this);
 
         DEBug.init(this, getSaveDir());
     }
@@ -30,7 +37,6 @@ public class MainActivity extends Activity implements View.OnClickListener{
     @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
-        DEBug.show(this);
     }
 
     @Override
@@ -56,9 +62,65 @@ public class MainActivity extends Activity implements View.OnClickListener{
                     e.printStackTrace();
                 }
                 break;
-            case R.id.btn_crash:
+            case R.id.btn_crash1:
                 int a = 0/0;
+                break;
+            case R.id.btn_crash2:
+                throw new IllegalAccessError("Test Crash2");
+            case R.id.btn_crash3:
+                throw new IllegalStateException("Test Crash3");
+            case R.id.btn_start_test:
+                isTestON = true;
+                new TestThread(1).start();
+                new TestThread(2).start();
+                new TestThread(3).start();
+                new TestThread(4).start();
+                new TestThread(5).start();
+                new TestThread(6).start();
+                new TestThread(7).start();
+                new TestThread(8).start();
+                new TestThread(9).start();
+                DEBug.show(this, DEBug.PAGE_LOGS);
+                break;
+            case R.id.btn_stop_test:
+                isTestON = false;
+                DEBug.show(this, DEBug.PAGE_LOGS);
                 break;
         }
     }
+
+    class TestThread extends Thread{
+        private int index;
+        private int count = 0;
+        public TestThread(int index) {
+            this.index = index;
+        }
+
+        @Override
+        public void run() {
+            while (isTestON){
+                switch (index%3){
+                    case 0:
+                        DEBug.d(String.format("[Thread:%d] --- %d", index, count));
+                        break;
+                    case 1:
+                        DEBug.w(String.format("[Thread:%d] --- %d", index, count));
+                        break;
+                    case 2:
+                        DEBug.e(String.format("[Thread:%d] --- %d", index, count));
+                        break;
+                }
+
+                count++;
+
+                try {
+                    sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private boolean isTestON = false;
 }

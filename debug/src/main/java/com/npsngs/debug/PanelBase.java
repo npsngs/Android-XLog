@@ -5,28 +5,36 @@ import android.view.ViewGroup;
 
 abstract class PanelBase {
     private View contentView;
-    private ViewGroup parent;
-    protected abstract View createView(ViewGroup parent);
-    void attachTo(ViewGroup parent){
-        this.parent = parent;
-        contentView = createView(parent);
-        parent.addView(contentView);
-    }
-
-    void dismiss(){
-        if(isShow()){
-            onDismiss();
-            parent.removeView(contentView);
-            parent = null;
-            contentView = null;
+    private PanelContainer container;
+    protected abstract View onCreateView(ViewGroup parent);
+    View getContentView(ViewGroup parent){
+        if(contentView == null){
+            contentView = onCreateView(parent);
         }
+        return contentView;
     }
 
-    protected void onDismiss(){
+    void onAttach(PanelContainer container){
+        this.container = container;
+    }
 
+    void onDismiss(){
+        contentView = null;
     }
 
     boolean isShow(){
-        return parent != null && contentView != null;
+        return contentView != null;
+    }
+
+    public void showPanel(PanelBase panel) {
+        if(null != container){
+            container.showPanel(panel);
+        }
+    }
+
+    protected void dismiss(){
+        if(null != container && isShow()){
+            container.dismissPanel(this);
+        }
     }
 }

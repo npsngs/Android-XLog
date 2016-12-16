@@ -11,7 +11,13 @@ import android.view.View;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-abstract class JsonParser implements TextParser {
+class JsonParser implements TextParser {
+    private PanelContainer panelContainer;
+
+    JsonParser(PanelContainer panelContainer) {
+        this.panelContainer = panelContainer;
+    }
+
     @Override
     public void parse(SpannableStringBuilder spannableBuilder, String inputStr) {
         SparseIntArray index = detectJson(inputStr);
@@ -160,11 +166,6 @@ abstract class JsonParser implements TextParser {
     }
 
 
-
-
-
-
-
     private class JsonClickSpan extends ClickableSpan {
         private String json;
         JsonClickSpan(String json) {
@@ -179,9 +180,11 @@ abstract class JsonParser implements TextParser {
 
         @Override
         public void onClick(View widget) {
-            onJsonClick(json);
+            if(panelContainer != null){
+                JsonPanel jsonPanel = new JsonPanel(json);
+                panelContainer.showPanel(jsonPanel);
+            }
         }
     }
 
-    protected abstract void onJsonClick(String json);
 }
