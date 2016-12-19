@@ -7,7 +7,6 @@ import android.text.method.LinkMovementMethod;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -17,7 +16,7 @@ class DEBugPopup implements View.OnClickListener {
     private PopupWindow popupWindow;
     private TextView tv_config_list, tv_log_list, tv_error_list, tv_message_detail, tv_title_left,
             tv_title_right, tv_title_center;
-    private ListView lv;
+    private TouchListView lv;
     private HVScrollView hsv_message_detail;
     private DEBugConfigAdapter configAdapter;
     private DEBugLogAdapter logAdapter;
@@ -34,7 +33,18 @@ class DEBugPopup implements View.OnClickListener {
         View root = View.inflate(activity, R.layout.ddebug_pop_window, null);
         initView(root);
         popupWindow = new PopupWindow(root, ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT);
+                ViewGroup.LayoutParams.MATCH_PARENT){
+            @Override
+            public void dismiss() {
+                if(!panelContainer.dismissPanel()) {
+                    if (hsv_message_detail.getVisibility() == View.VISIBLE) {
+                        hsv_message_detail.setVisibility(View.GONE);
+                    } else {
+                        super.dismiss();
+                    }
+                }
+            }
+        };
         popupWindow.setFocusable(true);
         popupWindow.setBackgroundDrawable(new ColorDrawable(0xffffffff));
     }
@@ -54,7 +64,6 @@ class DEBugPopup implements View.OnClickListener {
         }
 
         popupWindow.showAtLocation(decorView, Gravity.TOP, 0, 0);
-
         switchPage(page);
     }
 
@@ -63,7 +72,7 @@ class DEBugPopup implements View.OnClickListener {
         logAdapter = new DEBugLogAdapter(activity);
         crashAdapter = new DEBugCrashAdapter(activity);
 
-        lv = (ListView) root.findViewById(R.id.lv);
+        lv = (TouchListView) root.findViewById(R.id.lv);
         tv_config_list = (TextView) root.findViewById(R.id.tv_config_list);
         tv_log_list = (TextView) root.findViewById(R.id.tv_log_list);
         tv_error_list = (TextView) root.findViewById(R.id.tv_error_list);
@@ -87,6 +96,15 @@ class DEBugPopup implements View.OnClickListener {
         initOnShowParseText();
         logAdapter.setOnShowParseText(onShowParseText);
         crashAdapter.setOnShowParseText(onShowParseText);
+
+        lv.setDownTouchListener(new TouchListView.OnDownTouchListener() {
+            @Override
+            public void onDownTouch() {
+                if(panelContainer != null){
+                    panelContainer.dismissAllPanel();
+                }
+            }
+        });
     }
 
 
@@ -97,18 +115,22 @@ class DEBugPopup implements View.OnClickListener {
     }
 
 
+    private void onBackPressed(){
+        if(!panelContainer.dismissPanel()) {
+            if (hsv_message_detail.getVisibility() == View.VISIBLE) {
+                hsv_message_detail.setVisibility(View.GONE);
+            } else {
+                dismiss();
+            }
+        }
+    }
+
     private FilterPanel filterPanel;
     @Override
     public void onClick(View v) {
         int id = v.getId();
         if(R.id.tv_back == id) {
-            if(!panelContainer.dismissPanel()) {
-                if (hsv_message_detail.getVisibility() == View.VISIBLE) {
-                    hsv_message_detail.setVisibility(View.GONE);
-                } else {
-                    dismiss();
-                }
-            }
+            onBackPressed();
         } else if(R.id.tv_title_right == id){
             if(currentPage == DEBug.PAGE_LOGS){
                 DEBug.clearLog();

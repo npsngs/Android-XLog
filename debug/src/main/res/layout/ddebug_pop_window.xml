@@ -46,7 +46,7 @@
     </RelativeLayout>
     
     
-    <ListView
+    <com.npsngs.debug.TouchListView
         android:layout_below="@+id/rl_title"
         android:layout_alignParentLeft="true"
         android:layout_above="@+id/ll_btn"
@@ -55,7 +55,7 @@
         android:background="#ffefefef"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    </ListView>
+    </com.npsngs.debug.TouchListView>
 
     <LinearLayout
         android:layout_alignParentBottom="true"
