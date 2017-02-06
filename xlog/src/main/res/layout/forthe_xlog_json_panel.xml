@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.forthe.xlog.HVScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#252625"
+    android:visibility="visible"
+    android:id="@+id/hsv_message_detail"
+    android:layout_above="@+id/ll_btn"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:padding="10dp"
+        android:lineSpacingExtra="2sp"
+        android:textColor="#009900"
+        android:textSize="12sp"
+        android:id="@+id/tv_message_detail"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+</com.forthe.xlog.HVScrollView>
