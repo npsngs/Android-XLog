@@ -6,17 +6,21 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Switch;
 
+import com.forthe.xlog.tools.XLogUtils;
+
 
 class XLogConfigAdapter extends BaseAdapter {
     private Context context = null;
     private String[] items;
     private int padding;
+    private XLogConfig config;
     XLogConfigAdapter(Context context) {
         this.context = context;
         items = new String[]{
-            "调试信息","警告信息","错误信息","测试环境","保存信息","启用Logcat"
+            "调试信息","警告信息","错误信息","保存信息","启用Logcat"
         };
         padding = XLogUtils.dp2px(context, 12f);
+        config = XLog.getConfig();
     }
 
     @Override
@@ -65,24 +69,22 @@ class XLogConfigAdapter extends BaseAdapter {
         void bindPosition(int position){
             this.position = position;
             sw.setText(getItem(position));
+
             switch (position){
                 case 0:
-                    sw.setChecked(XLog.isDebugON());
+                    sw.setChecked(config.isDebugON());
                     break;
                 case 1:
-                    sw.setChecked(XLog.isWarnON());
+                    sw.setChecked(config.isWarnON());
                     break;
                 case 2:
-                    sw.setChecked(XLog.isErrorON());
+                    sw.setChecked(config.isErrorON());
                     break;
                 case 3:
-                    sw.setChecked(XLog.isTestON());
+                    sw.setChecked(config.isSaveON());
                     break;
                 case 4:
-                    sw.setChecked(XLog.isSaveON());
-                    break;
-                case 5:
-                    sw.setChecked(XLog.isLogcatON());
+                    sw.setChecked(config.isLogcatON());
                     break;
             }
         }
@@ -92,22 +94,19 @@ class XLogConfigAdapter extends BaseAdapter {
         public void onClick(View v) {
             switch (position){
                 case 0:
-                    XLog.switchDebug();
+                    config.switchDebug();
                     break;
                 case 1:
-                    XLog.switchWarn();
+                    config.switchWarn();
                     break;
                 case 2:
-                    XLog.switchError();
+                    config.switchError();
                     break;
                 case 3:
-                    XLog.switchTest();
+                    config.switchSave();
                     break;
                 case 4:
-                    XLog.switchSave();
-                    break;
-                case 5:
-                    XLog.switchLogcat();
+                    config.switchLogcat();
                     break;
             }
         }

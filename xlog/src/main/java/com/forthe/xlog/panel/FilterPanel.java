@@ -1,4 +1,4 @@
-package com.forthe.xlog;
+package com.forthe.xlog.panel;
 
 import android.content.Context;
 import android.text.Editable;
@@ -16,15 +16,22 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.forthe.xlog.R;
+import com.forthe.xlog.tools.XLogUtils;
+import com.forthe.xlog.core.ItemFilter;
+import com.forthe.xlog.frame.Adapter;
+import com.forthe.xlog.frame.FilterAdapter;
+import com.forthe.xlog.frame.PanelBase;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-class FilterPanel extends PanelBase implements AdapterView.OnItemClickListener{
+public class FilterPanel extends PanelBase implements AdapterView.OnItemClickListener{
     private FilterAdapter<String> filterAdapter;
     private List<MYFilter> filters;
     private MyAdapter adapter;
-    FilterPanel(FilterAdapter<String> filterAdapter) {
+    public FilterPanel(FilterAdapter<String> filterAdapter) {
         this.filterAdapter = filterAdapter;
     }
 
@@ -44,7 +51,7 @@ class FilterPanel extends PanelBase implements AdapterView.OnItemClickListener{
         adapter = new MyAdapter(context);
         adapter.setData(filters);
         lv.setAdapter(adapter);
-        lv.setBackgroundResource(R.drawable.sp_ddebug_filters_bg);
+        lv.setBackgroundResource(R.drawable.sp_forthe_xlog_filters_bg);
         int padding = XLogUtils.dp2px(context, 5);
         lv.setPadding(padding,padding,padding,padding);
         lv.setOnItemClickListener(this);
@@ -83,7 +90,7 @@ class FilterPanel extends PanelBase implements AdapterView.OnItemClickListener{
     }
 
     private EditPanel editPanel;
-    class MyAdapter extends Adapter<MYFilter>{
+    class MyAdapter extends Adapter<MYFilter> {
 
         MyAdapter(Context mContext) {
             super(mContext);
@@ -171,7 +178,7 @@ class FilterPanel extends PanelBase implements AdapterView.OnItemClickListener{
     }
 
 
-    static abstract class MYFilter implements ItemFilter<String>{
+    static abstract class MYFilter implements ItemFilter<String> {
         private String title;
         private boolean isUsed =false;
         MYFilter(String title) {
@@ -211,7 +218,7 @@ class FilterPanel extends PanelBase implements AdapterView.OnItemClickListener{
             editText.setTextColor(0xffffffff);
             editText.setHintTextColor(0xffa3a3a3);
             editText.setHint("regex expression");
-            editText.setBackgroundResource(R.drawable.sp_ddebug_filters_bg);
+            editText.setBackgroundResource(R.drawable.sp_forthe_xlog_filters_bg);
             editText.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
             editText.setSingleLine(true);
             int padding = XLogUtils.dp2px(context, 15);

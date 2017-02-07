@@ -11,6 +11,12 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.forthe.xlog.frame.Adapter;
+import com.forthe.xlog.frame.ColorPool;
+import com.forthe.xlog.frame.PanelContainer;
+import com.forthe.xlog.panel.TextPanel;
+import com.forthe.xlog.tools.XLogUtils;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -24,8 +30,10 @@ import java.util.regex.Pattern;
 
 
 class XLogCrashAdapter extends Adapter<XLogCrashAdapter.FileEntry> {
-    XLogCrashAdapter(Context mContext) {
+    private PanelContainer panelContainer;
+    XLogCrashAdapter(Context mContext, PanelContainer panelContainer) {
         super(mContext);
+        this.panelContainer = panelContainer;
     }
 
     void loadData() {
@@ -92,9 +100,8 @@ class XLogCrashAdapter extends Adapter<XLogCrashAdapter.FileEntry> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View v = convertView;
         CrashHolder crashHolder;
-        if(v == null){
+        if(convertView == null){
             TextView tv = new TextView(getContext());
             tv.setLayoutParams(new ListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -103,13 +110,13 @@ class XLogCrashAdapter extends Adapter<XLogCrashAdapter.FileEntry> {
             tv.setGravity(Gravity.LEFT);
             int padding = XLogUtils.dp2px(getContext(), 10);
             tv.setPadding(padding, padding, padding, padding);
-            tv.setTextColor(0xffff2200);
+            tv.setTextColor(ColorPool.e_color);
             tv.setSingleLine(true);
             tv.setClickable(false);
             crashHolder = new CrashHolder(tv);
             tv.setTag(crashHolder);
         }else{
-            crashHolder = (CrashHolder) v.getTag();
+            crashHolder = (CrashHolder) convertView.getTag();
         }
 
         crashHolder.bind(position);
@@ -117,7 +124,7 @@ class XLogCrashAdapter extends Adapter<XLogCrashAdapter.FileEntry> {
     }
 
 
-    class CrashHolder implements View.OnClickListener, View.OnLongClickListener{
+    private class CrashHolder implements View.OnClickListener, View.OnLongClickListener{
         TextView tv;
         int position;
         CrashHolder(TextView tv) {
@@ -138,9 +145,9 @@ class XLogCrashAdapter extends Adapter<XLogCrashAdapter.FileEntry> {
 
         @Override
         public void onClick(View v) {
-            if(null != onShowParseText){
+            if(null != panelContainer){
                 String crashLog = getErrStr(position);
-                onShowParseText.showParsedText(crashLog, 0xffff2200);
+                panelContainer.showPanel(new TextPanel(crashLog, 0xffff2200));
             }
         }
 
@@ -167,10 +174,6 @@ class XLogCrashAdapter extends Adapter<XLogCrashAdapter.FileEntry> {
         }
     };
 
-    private XLogPopup.OnShowParseText onShowParseText;
-    void setOnShowParseText(XLogPopup.OnShowParseText onShowParseText) {
-        this.onShowParseText = onShowParseText;
-    }
 
     private String getErrStr(int pos){
         try{

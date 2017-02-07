@@ -2,65 +2,71 @@ package com.forthe.xlog;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.forthe.xlog.core.LogNotifier;
+
 import java.io.File;
-import java.util.Vector;
+import java.util.List;
 
 public class XLog {
-    private static int flag =0x00;
-    private static SharedPreferences sp;
-    private static final Vector<String> logs = new Vector<>();
-    private static String logSaveDir = null;
-    private static String crashSaveDir = null;
-    private static XLogReceiver logReceiver = null;
-    private static XLogNotifier logNotifier = null;
-    private static XLogStorer logStorer = null;
-
+    private static String logSaveDir;
+    private static String crashSaveDir;
+    private static XLogReceiver logReceiver;
+    private static LogNotifier logNotifier;
+    private static XLogStore logStore;
+    private static XLogConfig config;
+    private static boolean hasInit = false;
     public static void init(Context context){
         init(context,null);
     }
 
     public static void init(Context context, String saveDir){
-        sp = context.getSharedPreferences("ui_libs",Context.MODE_PRIVATE);
-        flag = sp.getInt("debug_flags", 0);
-        logReceiver = new XLogReceiver() {
+        if(hasInit){
+            return;
+        }
+        config = new XLogConfig(context) {
             @Override
-            void onReceiveLog(String log) {
-                onAddLog(log);
+            protected void onConfigChange() {
+                if(config.isActivated()){
+                    logReceiver.init();
+                    if(config.isSaveON()){
+                        logStore.setNeedSaveToFile(true);
+                    }
+                }
             }
         };
-        if(isErrorON() || isWarnON() || isDebugON()){
-            logReceiver.init();
-        }
 
         if(!TextUtils.isEmpty(saveDir)){
             File pathFile = new File(saveDir);
-            if(!pathFile.exists()){
-                pathFile.mkdirs();
-            }
-
             File crashSaveFile = new File(pathFile, "crash");
-            if(!crashSaveFile.exists()){
-                crashSaveFile.mkdir();
-            }
-            crashSaveDir = crashSaveFile.getPath();
-            Thread.setDefaultUncaughtExceptionHandler(new CrashHandler(Thread
-                    .getDefaultUncaughtExceptionHandler(), crashSaveDir));
-
-
             File logSaveFile = new File(pathFile, "log");
-            if(!logSaveFile.exists()){
-                logSaveFile.mkdir();
-            }
+
+            crashSaveDir = crashSaveFile.getPath();
             logSaveDir = logSaveFile.getPath();
 
-            if(isSaveON()){
-                logStorer = new XLogStorer(logSaveDir);
-            }
+            Thread.setDefaultUncaughtExceptionHandler(new CrashHandler(Thread
+                    .getDefaultUncaughtExceptionHandler(), crashSaveDir));
         }
+
+
+        logStore = new XLogStore(logSaveDir, config.isSaveON());
+        logReceiver = new XLogReceiver() {
+
+            @Override
+            protected void onReceiveLog(String log) {
+                logStore.storeLog(log);
+                if(null != logNotifier){
+                    logNotifier.onLogAdd(log);
+                }
+            }
+        };
+
+        if(config.isActivated()){
+            logReceiver.init();
+        }
+        hasInit = true;
     }
 
     static String getCrashSaveDir() {
@@ -71,9 +77,6 @@ public class XLog {
         return logSaveDir;
     }
 
-    public static boolean isDEBugActive(){
-        return flag != 0;
-    }
 
 
     public static void d(String log){
@@ -81,9 +84,9 @@ public class XLog {
     }
 
     public static void d(String tag, String log){
-        if(isDebugON()){
+        if(config.isDebugON()){
             addLog("D",tag,log);
-            if(isLogcatON()){
+            if(config.isLogcatON()){
                 Log.d(tag,log);
             }
         }
@@ -94,9 +97,9 @@ public class XLog {
     }
 
     public static void w(String tag, String log){
-        if(isWarnON()){
+        if(config.isWarnON()){
             addLog("W",tag,log);
-            if(isLogcatON()){
+            if(config.isLogcatON()){
                 Log.w(tag,log);
             }
         }
@@ -107,9 +110,9 @@ public class XLog {
     }
 
     public static void e(String tag, String log){
-        if(isErrorON()){
+        if(config.isErrorON()){
             addLog("E",tag,log);
-            if(isLogcatON()){
+            if(config.isLogcatON()){
                 Log.e(tag,log);
             }
         }
@@ -127,154 +130,35 @@ public class XLog {
         logReceiver.receiveLog(log);
     }
 
-    private static void onAddLog(String log){
-        logs.add(log);
-        if(isSaveON()){
-            logStorer.saveLog(log);
-        }
 
+
+    static void clearLog(){
+        logStore.clear();
         if(null != logNotifier){
-            logNotifier.onNotifyLogAdd(log);
+            logNotifier.onLogClear();
         }
     }
 
-    public static void clearLog(){
-        logs.clear();
-        if(null != logNotifier){
-            logNotifier.onNotifyLogClear();
-        }
+    static List<String> getLogs() {
+        return logStore.getLogs();
     }
 
-    static Vector<String> getLogs() {
-        return logs;
+    static void setLogNotifier(LogNotifier logNotifier) {
+        XLog.logNotifier = logNotifier;
     }
 
+    private static XLogWindow buGPopupWindow = null;
 
-    static boolean isDebugON(){
-        return 0 != (flag&1);
-    }
-
-    static boolean switchDebug(){
-        if(isDebugON()){
-            flag = flag&0xfffffffe;
-        }else{
-            flag = flag|0x00000001;
-            logReceiver.init();
-        }
-        saveConfig();
-        return isDebugON();
-    }
-
-    static boolean isWarnON(){
-        return 0 != (flag&2);
-    }
-
-    static boolean switchWarn(){
-        if(isWarnON()){
-            flag = flag&0xfffffffd;
-        }else{
-            flag = flag|0x00000002;
-            logReceiver.init();
-        }
-        saveConfig();
-        return isWarnON();
-    }
-
-    static boolean isErrorON(){
-        return 0 != (flag&4);
-    }
-
-    static boolean switchError(){
-        if(isErrorON()){
-            flag = flag&0xfffffffb;
-        }else{
-            flag = flag|0x00000004;
-            logReceiver.init();
-        }
-        saveConfig();
-        return isErrorON();
-    }
-
-    public static boolean isTestON(){
-        return 0 != (flag&8);
-    }
-
-    public static boolean switchTest(){
-        if(isTestON()){
-            flag = flag&0xfffffff7;
-        }else{
-            flag = flag|0x00000008;
-        }
-        saveConfig();
-        return isTestON();
-    }
-
-
-    static boolean isLogcatON(){
-        return 0 != (flag&16);
-    }
-
-    static boolean switchLogcat(){
-        if(isLogcatON()){
-            flag = flag&0xffffffef;
-        }else{
-            flag = flag|0x00000010;
-        }
-        saveConfig();
-        return isLogcatON();
-    }
-
-    public static boolean isSaveON(){
-        return 0 != (flag&32);
-    }
-
-    public static boolean switchSave(){
-        if(isSaveON()){
-            flag = flag&0xffffffdf;
-        }else{
-            flag = flag|0x00000020;
-            if(null == logStorer){
-                logStorer = new XLogStorer(logSaveDir);
-            }
-        }
-        saveConfig();
-        return isSaveON();
-    }
-
-
-    private static void saveConfig(){
-        sp.edit().putInt("debug_flags", flag).apply();
-    }
-
-
-    static void setOnLogChangeListener(XLog.OnLogChangeListener onLogChangeListener) {
-        if(null == onLogChangeListener){
-            return;
-        }
-
-        if(null == logNotifier){
-            logNotifier = new XLogNotifier();
-        }
-        logNotifier.setOnLogChangeListener(onLogChangeListener);
-    }
-
-    interface OnLogChangeListener{
-        void onLogAdded(String log);
-        void onLogClear();
-    }
-
-    private static XLogPopup buGPopupWindow = null;
-
-    public static final int PAGE_CONFIG = 0;
-    public static final int PAGE_LOGS = 1;
-    public static final int PAGE_CRASH = 2;
-    public static void show(Activity activity, int page){
+    static final int PAGE_CONFIG = 0;
+    static final int PAGE_LOGS = 1;
+    static final int PAGE_CRASH = 2;
+    static void show(Activity activity, int page){
         if(buGPopupWindow == null){
-            buGPopupWindow = new XLogPopup(activity);
+            buGPopupWindow = new XLogWindow(activity);
         }else {
             if(!buGPopupWindow.isCurrentActivity(activity)){
                 buGPopupWindow.dismiss();
-                buGPopupWindow = new XLogPopup(activity);
+                buGPopupWindow = new XLogWindow(activity);
             }
         }
         buGPopupWindow.show(page);
@@ -284,9 +168,21 @@ public class XLog {
         show(activity, PAGE_CONFIG);
     }
 
+    public static void showLog(Activity activity){
+        show(activity, PAGE_LOGS);
+    }
+
+    public static void showCrash(Activity activity){
+        show(activity, PAGE_CRASH);
+    }
+
     public static void dismiss(Activity activity){
         if(buGPopupWindow != null && buGPopupWindow.isCurrentActivity(activity)){
             buGPopupWindow.dismiss();
         }
+    }
+
+    static XLogConfig getConfig() {
+        return config;
     }
 }

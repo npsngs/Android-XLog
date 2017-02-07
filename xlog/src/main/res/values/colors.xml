@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="xlog_d_color">#046604</color>
+    <color name="xlog_w_color">#e38204</color>
+    <color name="xlog_e_color">#ff2200</color>
+    <color name="xlog_json_color">#07aa07</color>
+    <color name="xlog_url_color">#3388cc</color>
+    <color name="xlog_panel_bg_color">#252625</color>
+    <color name="xlog_list_bg_color">#fefefe</color>
+</resources>

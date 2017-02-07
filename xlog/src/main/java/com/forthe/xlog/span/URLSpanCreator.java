@@ -1,33 +1,23 @@
-package com.forthe.xlog;
+package com.forthe.xlog.span;
 
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.Browser;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
 import android.text.TextPaint;
 import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.View;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.forthe.xlog.core.SpanCreator;
+import com.forthe.xlog.frame.ColorPool;
 
-class URLParser implements TextParser {
-    private Pattern pattern;
-    URLParser() {
-        pattern = Pattern.compile("([\\s\\S]*?)(http:[^\\s^\\]^,'\"]+)[\\s\\S]*?");
-    }
+public class URLSpanCreator implements SpanCreator {
     @Override
-    public void parse(SpannableStringBuilder spannableBuilder, String inputStr) {
-        Matcher matcher = pattern.matcher(inputStr);
-        while (matcher.find()){
-            int startPosition = matcher.start(2);
-            String  url = matcher.group(2);
-            spannableBuilder.setSpan(new UrlClickableSpan(url), startPosition, startPosition+url.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-        }
+    public Object createSpan(String source, int startPosition, int endPosition) {
+        String  url = source.substring(startPosition, endPosition);
+        return new UrlClickableSpan(url);
     }
 
     class UrlClickableSpan extends ClickableSpan {
@@ -40,7 +30,7 @@ class URLParser implements TextParser {
 
         @Override
         public void updateDrawState(TextPaint ds) {
-            ds.setColor(0xff3388cc);
+            ds.setColor(ColorPool.url_color);
             ds.setUnderlineText(true);
         }
 

@@ -8,20 +8,36 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.forthe.xlog.frame.ColorPool;
+import com.forthe.xlog.frame.FilterAdapter;
+import com.forthe.xlog.frame.PanelContainer;
+import com.forthe.xlog.panel.TextPanel;
+import com.forthe.xlog.tools.XLogUtils;
 
-class XLogAdapter extends FilterAdapter<String> implements XLog.OnLogChangeListener {
-    private final int[] logColors = {0xffff2200,0xffe38204,0xff188b02};
-    XLogAdapter(Context mContext) {
+
+class XLogAdapter extends FilterAdapter<String>{
+    private PanelContainer panelContainer;
+    XLogAdapter(Context mContext, PanelContainer panelContainer) {
         super(mContext);
         setData(XLog.getLogs());
-        XLog.setOnLogChangeListener(this);
+        this.panelContainer = panelContainer;
+        XLog.setLogNotifier(new XLogNotifier() {
+            @Override
+            protected void onNotifyLogAdd(String log) {
+                addData(log);
+            }
+
+            @Override
+            protected void onNotifyLogClear() {
+                clear();
+            }
+        });
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View v = convertView;
         LogHolder logHolder;
-        if(null == v){
+        if(null == convertView){
             TextView tv = new TextView(getContext());
             tv.setLayoutParams(new ListView.LayoutParams(ListView.LayoutParams.MATCH_PARENT, ListView.LayoutParams.WRAP_CONTENT));
             tv.setTextSize(12f);
@@ -33,14 +49,14 @@ class XLogAdapter extends FilterAdapter<String> implements XLog.OnLogChangeListe
             logHolder = new LogHolder(tv);
             tv.setTag(logHolder);
         }else{
-            logHolder = (LogHolder) v.getTag();
+            logHolder = (LogHolder) convertView.getTag();
         }
 
         logHolder.bind(position);
         return logHolder.tv;
     }
 
-    class LogHolder implements View.OnClickListener, View.OnLongClickListener{
+    private class LogHolder implements View.OnClickListener, View.OnLongClickListener{
         TextView tv;
         int position;
         LogHolder(TextView tv) {
@@ -54,11 +70,11 @@ class XLogAdapter extends FilterAdapter<String> implements XLog.OnLogChangeListe
 
             String log = getItem(position);
             if(log.startsWith("E")){
-                tv.setTextColor(logColors[0]);
+                tv.setTextColor(ColorPool.e_color);
             }else if(log.startsWith("W")){
-                tv.setTextColor(logColors[1]);
+                tv.setTextColor(ColorPool.w_color);
             }else if(log.startsWith("D")){
-                tv.setTextColor(logColors[2]);
+                tv.setTextColor(ColorPool.d_color);
             }
 
             if(!TextUtils.isEmpty(log) && log.length() > 200){
@@ -70,14 +86,14 @@ class XLogAdapter extends FilterAdapter<String> implements XLog.OnLogChangeListe
 
         @Override
         public void onClick(View v) {
-            if(null != onShowParseText){
+            if(null != panelContainer){
                 String log = getItem(position);
                 if(log.startsWith("E")){
-                    onShowParseText.showParsedText(log, logColors[0]);
+                    panelContainer.showPanel(new TextPanel(log, ColorPool.e_color));
                 }else if(log.startsWith("W")){
-                    onShowParseText.showParsedText(log, logColors[1]);
+                    panelContainer.showPanel(new TextPanel(log, ColorPool.w_color));
                 }else if(log.startsWith("D")){
-                    onShowParseText.showParsedText(log, logColors[2]);
+                    panelContainer.showPanel(new TextPanel(log, ColorPool.d_color));
                 }
             }
         }
@@ -88,21 +104,5 @@ class XLogAdapter extends FilterAdapter<String> implements XLog.OnLogChangeListe
             XLogUtils.sendText(getContext(), text);
             return true;
         }
-    }
-
-
-    @Override
-    public void onLogAdded(String log) {
-        addData(log);
-    }
-
-    @Override
-    public void onLogClear() {
-        clear();
-    }
-
-    private XLogPopup.OnShowParseText onShowParseText;
-    void setOnShowParseText(XLogPopup.OnShowParseText onShowParseText) {
-        this.onShowParseText = onShowParseText;
     }
 }

@@ -2,8 +2,6 @@ package com.forthe.xlog;
 
 import android.app.Activity;
 import android.graphics.drawable.ColorDrawable;
-import android.text.SpannableStringBuilder;
-import android.text.method.LinkMovementMethod;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,37 +9,39 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-class XLogPopup implements View.OnClickListener {
+import com.forthe.xlog.frame.ColorPool;
+import com.forthe.xlog.frame.PanelContainer;
+import com.forthe.xlog.panel.FilterPanel;
+import com.forthe.xlog.tools.TouchListView;
+
+class XLogWindow implements View.OnClickListener {
     private Activity activity;
     private PopupWindow popupWindow;
-    private TextView tv_config_list, tv_log_list, tv_error_list, tv_message_detail, tv_title_left,
+    private TextView tv_config_list, tv_log_list, tv_error_list, tv_title_left,
             tv_title_right, tv_title_center;
     private TouchListView lv;
-    private HVScrollView hsv_message_detail;
     private XLogConfigAdapter configAdapter;
     private XLogAdapter logAdapter;
     private XLogCrashAdapter crashAdapter;
-
     private PanelContainer panelContainer;
 
     boolean isCurrentActivity(Activity activity){
         return activity != null && activity.equals(this.activity);
     }
 
-    XLogPopup(Activity activity) {
+    XLogWindow(Activity activity) {
         this.activity = activity;
+        ColorPool.init(activity);
         View root = View.inflate(activity, R.layout.forthe_xlog_pop_window, null);
         initView(root);
         popupWindow = new PopupWindow(root, ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT){
             @Override
             public void dismiss() {
-                if(!panelContainer.dismissPanel()) {
-                    if (hsv_message_detail.getVisibility() == View.VISIBLE) {
-                        hsv_message_detail.setVisibility(View.GONE);
-                    } else {
-                        super.dismiss();
-                    }
+                if(!panelContainer.isEmpty()) {
+                    panelContainer.dismissChild();
+                }else{
+                    super.dismiss();
                 }
             }
         };
@@ -68,19 +68,18 @@ class XLogPopup implements View.OnClickListener {
     }
 
     private void initView(View root){
+        RelativeLayout rl_panel_container = (RelativeLayout) root.findViewById(R.id.rl_panel_container);
+        panelContainer = new PanelContainer(rl_panel_container);
+
         configAdapter = new XLogConfigAdapter(activity);
-        logAdapter = new XLogAdapter(activity);
-        crashAdapter = new XLogCrashAdapter(activity);
+        logAdapter = new XLogAdapter(activity, panelContainer);
+        crashAdapter = new XLogCrashAdapter(activity, panelContainer);
 
         lv = (TouchListView) root.findViewById(R.id.lv);
         tv_config_list = (TextView) root.findViewById(R.id.tv_config_list);
         tv_log_list = (TextView) root.findViewById(R.id.tv_log_list);
         tv_error_list = (TextView) root.findViewById(R.id.tv_error_list);
-        tv_message_detail = (TextView) root.findViewById(R.id.tv_message_detail);
-        hsv_message_detail = (HVScrollView) root.findViewById(R.id.hsv_message_detail);
-        RelativeLayout rl_panel_container = (RelativeLayout) root.findViewById(R.id.rl_panel_container);
-        tv_message_detail.setMovementMethod(LinkMovementMethod.getInstance());
-        panelContainer = new PanelContainer(rl_panel_container);
+
 
         tv_title_left = (TextView) root.findViewById(R.id.tv_title_left);
         tv_title_right = (TextView) root.findViewById(R.id.tv_title_right);
@@ -93,15 +92,11 @@ class XLogPopup implements View.OnClickListener {
         tv_title_right.setOnClickListener(this);
         tv_title_left.setOnClickListener(this);
 
-        initOnShowParseText();
-        logAdapter.setOnShowParseText(onShowParseText);
-        crashAdapter.setOnShowParseText(onShowParseText);
-
         lv.setDownTouchListener(new TouchListView.OnDownTouchListener() {
             @Override
             public void onDownTouch() {
                 if(panelContainer != null){
-                    panelContainer.dismissAllPanel();
+                    panelContainer.dismissAllChild();
                 }
             }
         });
@@ -116,12 +111,10 @@ class XLogPopup implements View.OnClickListener {
 
 
     private void onBackPressed(){
-        if(!panelContainer.dismissPanel()) {
-            if (hsv_message_detail.getVisibility() == View.VISIBLE) {
-                hsv_message_detail.setVisibility(View.GONE);
-            } else {
-                dismiss();
-            }
+        if(!panelContainer.isEmpty()) {
+            panelContainer.dismissChild();
+        }else{
+            dismiss();
         }
     }
 
@@ -149,13 +142,10 @@ class XLogPopup implements View.OnClickListener {
                 }
             }
         } else if(R.id.tv_config_list == id){
-            panelContainer.dismissAllPanel();
             switchPage(XLog.PAGE_CONFIG);
         } else if(R.id.tv_log_list == id){
-            panelContainer.dismissAllPanel();
             switchPage(XLog.PAGE_LOGS);
         } else if(R.id.tv_error_list == id){
-            panelContainer.dismissAllPanel();
             switchPage(XLog.PAGE_CRASH);
         }
     }
@@ -168,9 +158,8 @@ class XLogPopup implements View.OnClickListener {
      */
     private int currentPage;
     private void switchPage(int page){
+        panelContainer.dismissAllChild();
         currentPage = page;
-        hsv_message_detail.setVisibility(View.GONE);
-
         tv_config_list.setSelected(false);
         tv_log_list.setSelected(false);
         tv_error_list.setSelected(false);
@@ -201,41 +190,4 @@ class XLogPopup implements View.OnClickListener {
             default:
         }
     }
-
-
-
-    private OnShowParseText onShowParseText;
-    interface OnShowParseText{
-        void showParsedText(String text, int color);
-    }
-
-    private TextParseEngine textParseEngine;
-    private void initOnShowParseText(){
-        onShowParseText = new OnShowParseText() {
-            @Override
-            public void showParsedText(String text, int color) {
-                if(null == textParseEngine){
-                    initParseEngine();
-                }
-                hsv_message_detail.setVisibility(View.VISIBLE);
-                hsv_message_detail.scrollTo(0,0);
-                tv_message_detail.setTextColor(color);
-
-                textParseEngine.startParse(text);
-            }
-        };
-    }
-
-    private void initParseEngine(){
-        textParseEngine = new TextParseEngine() {
-            @Override
-            void onUpdateParseResult(SpannableStringBuilder spannableBuilder) {
-                tv_message_detail.setText(spannableBuilder);
-            }
-        };
-
-        textParseEngine.add(new JsonParser(panelContainer));
-        textParseEngine.add(new URLParser());
-    }
-
 }

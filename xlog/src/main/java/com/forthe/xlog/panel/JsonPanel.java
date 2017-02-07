@@ -1,4 +1,4 @@
-package com.forthe.xlog;
+package com.forthe.xlog.panel;
 
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
@@ -8,6 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.forthe.xlog.R;
+import com.forthe.xlog.frame.PanelBase;
+import com.forthe.xlog.frame.ParseEngine;
+import com.forthe.xlog.parser.URLParser;
+import com.forthe.xlog.span.URLSpanCreator;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,7 +21,7 @@ import org.json.JSONTokener;
 
 import java.util.Iterator;
 
-class JsonPanel extends PanelBase{
+class JsonPanel extends PanelBase {
     private String json;
     JsonPanel(String json) {
         this.json = json;
@@ -27,17 +33,17 @@ class JsonPanel extends PanelBase{
         View v = inflater.inflate(R.layout.forthe_xlog_json_panel, parent, false);
         final TextView tv_message = (TextView) v.findViewById(R.id.tv_message_detail);
         tv_message.setMovementMethod(LinkMovementMethod.getInstance());
-        TextParseEngine textParseEngine = new TextParseEngine() {
-            @Override
-            void onUpdateParseResult(SpannableStringBuilder spannableBuilder) {
-                tv_message.setText(spannableBuilder);
-            }
-        };
-        textParseEngine.add(new URLParser());
+        ParseEngine parseEngine = new ParseEngine();
+        parseEngine.addParser(new URLParser(), new URLSpanCreator());
 
         try {
             String formatJson = formatResult(json).toString();
-            textParseEngine.startParse(formatJson);
+            parseEngine.startParse(formatJson, new ParseEngine.OnParseCallback() {
+                @Override
+                public void onParseUpdate(String source, SpannableStringBuilder stringBuilder) {
+                    tv_message.setText(stringBuilder);
+                }
+            });
         } catch (Exception e) {
             e.printStackTrace();
             tv_message.setText(json);

@@ -4,50 +4,40 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 
-class XLogNotifier {
+import com.forthe.xlog.core.LogNotifier;
+
+abstract class XLogNotifier implements LogNotifier{
     private Handler handler = null;
-    private void init(){
+    XLogNotifier(){
         if(handler == null){
-            handler = new NotifyHandler(Looper.getMainLooper());
-        }
-    }
-
-    class NotifyHandler extends Handler{
-        NotifyHandler(Looper looper) {
-            super(looper);
-        }
-        @Override
-        public void handleMessage(Message msg) {
-            if(onLogChangeListener != null){
-                switch (msg.what){
-                    case 0:
-                        onLogChangeListener.onLogAdded((String) msg.obj);
-                        break;
-                    case 1:
-                        onLogChangeListener.onLogClear();
-                        break;
+            handler = new Handler(Looper.getMainLooper()){
+                @Override
+                public void handleMessage(Message msg) {
+                    switch (msg.what){
+                        case 0:
+                            onNotifyLogAdd((String) msg.obj);
+                            break;
+                        case 1:
+                            onNotifyLogClear();
+                            break;
+                    }
                 }
-            }
+            };
         }
     }
 
-    private XLog.OnLogChangeListener onLogChangeListener = null;
-    void setOnLogChangeListener(XLog.OnLogChangeListener onLogChangeListener) {
-        this.onLogChangeListener = onLogChangeListener;
-        init();
-    }
-
-    void onNotifyLogAdd(String log){
-        if(onLogChangeListener == null || handler == null){
-            return;
-        }
+    @Override
+    public void onLogAdd(String log) {
         handler.obtainMessage(0, log).sendToTarget();
     }
 
-    void onNotifyLogClear(){
-        if(onLogChangeListener == null || handler == null){
-            return;
-        }
+    @Override
+    public void onLogClear() {
         handler.obtainMessage(1).sendToTarget();
     }
+
+
+    protected abstract void onNotifyLogAdd(String log);
+    protected abstract void onNotifyLogClear();
+
 }

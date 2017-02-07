@@ -3,6 +3,7 @@ package com.npsngs.app;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.KeyEvent;
 import android.view.View;
 
 
@@ -53,9 +54,10 @@ public class MainActivity extends Activity implements View.OnClickListener{
                         "11-03 18:27:43.042 14150-14150/com.yxd.live W/System.err:     at android.os.Handler.dispatchMessage(Handler.java:95)\n" +
                         "11-03 18:27:43.042 14150-14150/com.yxd.live W/http://www.baidu.com System.err:     at android.os.Looper.loop(Looper.java:148)\n" +
                         "11-03 18:27:43.042 14150-14150/com.yxd.live{\"aa\":\"xx\"}W/System.err:     at android.app");
-                XLog.d("test","test send log d");
+                XLog.d("POST\t[game/app_home_getGameByType]\t[url:http://duoyou.youxiduo.com/service/game/app_home_getGameByType?appname=duoyou_android&channel=bf-2WlIucl1m&channelId=bf-2WlIucl1m&gameTypeTag=1&idcode=357485035080912&pageNow=1&pageSize=9&platform=sdk&session_id=&version=3.1.5&source=a63a9599b2c5ec4ad166051ffb9936c0]\n" +
+                        "[response:200]:{\"errorCode\":0,\"errorDescription\":\"Success\",\"result\":[{\"gameId\":\"aG9SZN3RDG3L\",\"gameName\":\"舞动青春\",\"gameSize\":147,\"gameIcon\":\"http://img.youxiduo.com/userdirs/duoyou_game/2017/01/201701202104305CRJ.png\",\"gameDiscount\":53.0,\"chargeDiscount\":53.0,\"chargequota\":null,\"rechargequota\":null,\"gameType\":\"舞蹈\",\"gameListPicture\":\"http://img.youxiduo.com/userdirs/duoyou_game/2016/09/20160913201405SxNo.JPG\",\"gameListOrder\":760,\"gameCreateTime\":null,\"isTop\":\"0\",\"gameTypeTag\":\"推荐,音乐\"},{\"gameId\":\"SW_-Kr0FitBF\",\"gameName\":\"劲舞团\",\"gameSize\":389,\"gameIcon\":\"http://img.youxiduo.com/userdirs/duoyou_game/2016/12/20161221131226qLxx.png\",\"gameDiscount\":54.0,\"chargeDiscount\":54.0,\"chargequota\":null,\"rechargequota\":null,\"gameType\":\"舞蹈\",\"gameListPicture\":\"http://img.youxiduo.com/userdirs/duoyou_game/2016/09/20160919155744VjNK.jpg\",\"gameListOrder\":500,\"gameCreateTime\":null,\"isTop\":\"0\",\"gameTypeTag\":\"推荐,音乐\"},{\"gameId\":\"LDT7P0Ph9X1r\",\"gameName\":\"阴阳师\",\"gameSize\":518,\"gameIcon\":\"http://img.youxiduo.com/userdirs/duoyou_game/2016/09/20160923104530eYxx.png\",\"gameDiscount\":54.0,\"chargeDiscount\":54.0,\"chargequota\":null,\"rechargequota\":null,\"gameType\":\"卡牌\",\"gameListPicture\":\"http://img.youxiduo.com/userdirs/duoyou_game/2016/09/20160923104531m8ny.jpg\",\"gameListOrder\":150,\"gameCreateTime\":null,\"isTop\":\"0\",\"gameTypeTag\":\"推荐,策略\"},{\"gameId\":\"KdjSl5J9q84x\",\"gameName\":\"天堂2\",\"gameSize\":528,\"gameIcon\":\"http://img.youxiduo.com/userdirs/duoyou_game/2017/01/201701072242468Tau.png\",\"gameDiscount\":74.0,\"chargeDiscount\":74.0,\"chargequota\":null,\"rechargequota\":null,\"gameType\":\"角色\",\"gameListPicture\":\"http://img.youxiduo.com/userdirs/duoyou_game/2016/09/20160928180231iBbj.jpg\",\"gameListOrder\":150,\"gameCreateTime\":null,\"isTop\":\"0\",\"gameTypeTag\":\"推荐,角色\"},{\"gameId\":\"1OyYapIQ54dH\",\"gameName\":\"倩女幽魂\",\"gameSize\":300,\"gameIcon\":\"http://img.youxiduo.com/userdirs/duoyou_game/2016/12/20161230161558oDLT.png\",\"gameDiscount\":54.0,\"chargeDiscount\":54.0,\"chargequota\":null,\"rechargequota\":null,\"gameType\":\"角色\",\"gameListPicture\":\"http://img.youxiduo.com/userdirs/duoyou_game/2016/12/20161230161558pOYG.jpg\",\"gameListOrder\":130,\"gameCreateTime\":null,\"isTop\":\"0\",\"gameTypeTag\":\"推荐,角色\"},{\"gameId\":\"Upe84A_uD8WG\",\"gameName\":\"九阴\",\"gameSize\":400,\"gameIcon\":\"http://img.youxiduo.com/userdirs/duoyou_game/2017/01/20170119100337lIvA.png\",\"gameDiscount\":54.0,\"chargeDiscount\":54.0,\"chargequota\":null,\"rechargequota\":null,\"gameType\":\"角色\",\"gameListPicture\":\"http://img.youxiduo.com/userdirs/duoyou_game/2017/01/20170119100337JOjY.jpg\",\"gameListOrder\":100,\"gameCreateTime\":null,\"isTop\":\"0\",\"gameTypeTag\":\"推荐,角色\"},{\"gameId\":\"X1jMjCrov-eA\",\"gameName\":\"皇室战争\",\"gameSize\":300,\"gameIcon\":\"http://img.youxiduo.com/userdirs/duoyou_game/2016/09/201609140041458GsP.png\",\"gameDiscount\":76.0,\"chargeDiscount\":76.0,\"chargequota\":null,\"rechargequota\":null,\"gameType\":\"策略\",\"gameListPicture\":\"http://img.youxiduo.com/userdirs/duoyou_game/2016/09/201609140041451A9S.JPG\",\"gameListOrder\":10,\"gameCreateTime\":null,\"isTop\":\"0\",\"gameTypeTag\":\"推荐,策略\"},{\"gameId\":\"A1iwvJ6Z2o-x\",\"gameName\":\"水浒Q传\",\"gameSize\":211,\"gameIcon\":\"http://img.youxiduo.com/userdirs/duoyou_game/2017/01/20170107143900Yi3R.png\",\"gameDiscount\":54.0,\"chargeDiscount\":54.0,\"chargequota\":null,\"rechargequota\":null,\"gameType\":\"回合\",\"gameListPicture\":\"http://img.youxiduo.com/userdirs/duoyou_game/2016/09/20160927125941duoU.jpg\",\"gameListOrder\":6,\"gameCreateTime\":null,\"isTop\":\"0\",\"gameTypeTag\":\"推荐,回合\"},{\"gameId\":\"Lla4ukWCaP08\",\"gameName\":\"剑与魔法\",\"gameSize\":292,\"gameIcon\":\"http://img.youxiduo.com/userdirs/duoyou_game/2017/02/2017020512111450UH.png\",\"gameDiscount\":54.0,\"chargeDiscount\":54.0,\"chargequota\":null,\"rechargequota\":null,\"gameType\":\"角色\",\"gameListPicture\":\"http://img.youxiduo.com/userdirs/duoyou_game/2017/02/20170205121114iGJb.jpg\",\"gameListOrder\":5,\"gameCreateTime\":null,\"isTop\":\"0\",\"gameTypeTag\":\"推荐,角色\"}],\"totalCount\":10}\n");
                 XLog.w("test","test send log w");
-                XLog.show(this, XLog.PAGE_LOGS);
+                XLog.showLog(this);
                 try {
                     JSONObject j = new JSONObject("");
                 } catch (JSONException e) {
@@ -80,11 +82,11 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 new TestThread(7).start();
                 new TestThread(8).start();
                 new TestThread(9).start();
-                XLog.show(this, XLog.PAGE_LOGS);
+                XLog.showLog(this);
                 break;
             case R.id.btn_stop_test:
                 isTestON = false;
-                XLog.show(this, XLog.PAGE_LOGS);
+                XLog.showLog(this);
                 break;
         }
     }
@@ -123,4 +125,16 @@ public class MainActivity extends Activity implements View.OnClickListener{
     }
 
     private boolean isTestON = false;
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode == event.KEYCODE_VOLUME_UP){
+            XLog.show(this);
+            return true;
+        }else if(keyCode == event.KEYCODE_VOLUME_DOWN){
+            XLog.showLog(this);
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 }

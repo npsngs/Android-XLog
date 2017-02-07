@@ -1,7 +1,9 @@
-package com.forthe.xlog;
+package com.forthe.xlog.frame;
 
 import android.content.Context;
 import android.widget.BaseAdapter;
+
+import com.forthe.xlog.core.ItemFilter;
 
 import java.util.ArrayList;
 import java.util.List;

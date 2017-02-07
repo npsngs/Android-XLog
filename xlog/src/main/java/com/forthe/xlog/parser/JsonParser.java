@@ -1,51 +1,13 @@
-package com.forthe.xlog;
+package com.forthe.xlog.parser;
 
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
-import android.text.TextPaint;
 import android.text.TextUtils;
-import android.text.style.ClickableSpan;
 import android.util.SparseIntArray;
-import android.view.View;
+import com.forthe.xlog.core.LogParser;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-class JsonParser implements TextParser {
-    private PanelContainer panelContainer;
-
-    JsonParser(PanelContainer panelContainer) {
-        this.panelContainer = panelContainer;
-    }
+public class JsonParser implements LogParser {
 
     @Override
-    public void parse(SpannableStringBuilder spannableBuilder, String inputStr) {
-        SparseIntArray index = detectJson(inputStr);
-        if(index != null && index.size() > 0){
-            int startPosition;
-            int endPosition;
-            for(int i = 0; i < index.size(); i++){
-                startPosition = index.keyAt(i);
-                endPosition = index.get(startPosition);
-                String subJson = inputStr.substring(startPosition, endPosition);
-                try{
-                    if(subJson.startsWith("{")) {
-                        new JSONObject(subJson);
-                    } else if(subJson.startsWith("[")) {
-                        new JSONArray(subJson);
-                    } else {
-                        continue;
-                    }
-                }catch (Exception e){
-                    continue;
-                }
-
-                spannableBuilder.setSpan(new JsonClickSpan(subJson), startPosition, endPosition, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-            }
-        }
-    }
-
-    private SparseIntArray detectJson(String input){
+    public SparseIntArray parse(String input) {
         if(TextUtils.isEmpty(input)){
             return null;
         }
@@ -164,27 +126,4 @@ class JsonParser implements TextParser {
 
         return index;
     }
-
-
-    private class JsonClickSpan extends ClickableSpan {
-        private String json;
-        JsonClickSpan(String json) {
-            this.json = json;
-        }
-
-        @Override
-        public void updateDrawState(TextPaint ds) {
-            ds.setColor(0xff009900);
-            ds.setUnderlineText(false);
-        }
-
-        @Override
-        public void onClick(View widget) {
-            if(panelContainer != null){
-                JsonPanel jsonPanel = new JsonPanel(json);
-                panelContainer.showPanel(jsonPanel);
-            }
-        }
-    }
-
 }

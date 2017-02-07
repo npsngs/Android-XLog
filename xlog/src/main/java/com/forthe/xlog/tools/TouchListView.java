@@ -1,4 +1,4 @@
-package com.forthe.xlog;
+package com.forthe.xlog.tools;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -6,7 +6,7 @@ import android.view.MotionEvent;
 import android.widget.ListView;
 
 
-class TouchListView extends ListView {
+public class TouchListView extends ListView {
     public TouchListView(Context context) {
         super(context);
     }
@@ -33,7 +33,7 @@ class TouchListView extends ListView {
     public void setDownTouchListener(OnDownTouchListener downTouchListener) {
         this.downTouchListener = downTouchListener;
     }
-    interface OnDownTouchListener{
+    public interface OnDownTouchListener{
         void onDownTouch();
     }
 }

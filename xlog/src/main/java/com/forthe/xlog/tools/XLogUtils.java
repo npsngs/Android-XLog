@@ -1,8 +1,10 @@
-package com.forthe.xlog;
+package com.forthe.xlog.tools;
 
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
+
+import java.io.File;
 
 public class XLogUtils {
     public static int dp2px(Context context, float dp){
@@ -32,4 +34,5 @@ public class XLogUtils {
         intent.putExtra(Intent.EXTRA_STREAM, "file://"+filePath);
         from.startActivity(intent);
     }
+
 }

@@ -19,6 +19,11 @@ class CrashHandler implements UncaughtExceptionHandler {
     @Override
     public void uncaughtException(Thread thread, final Throwable ex) {
         try {
+            File dirFile = new File(saveToDir);
+            if(!dirFile.exists() && !dirFile.mkdirs()){
+                return;
+            }
+
             CharSequence date = DateFormat.format("yyyy-MM-dd_HHmmss", System.currentTimeMillis());
             File errLog = new File(saveToDir, String.format("crash_%s.txt", date));
             if (!errLog.exists()) {
