@@ -1,8 +1,11 @@
 package com.forthe.xlog.core;
 
+import android.content.Context;
 import android.view.ViewGroup;
 
 public interface Container {
+    Context getContext();
+
     ViewGroup getContainer();
 
     void showPanel(Panel child);

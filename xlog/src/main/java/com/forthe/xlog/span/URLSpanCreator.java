@@ -3,6 +3,7 @@ package com.forthe.xlog.span;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.provider.Browser;
 import android.text.TextPaint;
@@ -12,8 +13,10 @@ import android.view.View;
 
 import com.forthe.xlog.core.SpanCreator;
 import com.forthe.xlog.frame.ColorPool;
+import com.forthe.xlog.tools.XLogUtils;
 
-public class URLSpanCreator implements SpanCreator {
+public abstract class URLSpanCreator implements SpanCreator {
+
     @Override
     public Object createSpan(String source, int startPosition, int endPosition) {
         String  url = source.substring(startPosition, endPosition);
@@ -36,16 +39,17 @@ public class URLSpanCreator implements SpanCreator {
 
         @Override
         public void onClick(View widget) {
-            Uri uri = Uri.parse(url);
-            Context context = widget.getContext();
-            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-            intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
-            try {
-                context.startActivity(intent);
-            } catch (ActivityNotFoundException e) {
-                Log.w("URLSpan", "Actvity was not found for intent, " + intent.toString());
+            PackageManager pm = widget.getContext().getPackageManager();
+            boolean hasPermission = (PackageManager.PERMISSION_GRANTED ==
+                    pm.checkPermission("android.permission.INTERNET", widget.getContext().getPackageName()));
+            if (hasPermission) {
+                gotoHttpPanel(url);
+            }else {
+                Context context = widget.getContext();
+                XLogUtils.viewUrl(context, url);
             }
         }
     }
 
+    protected abstract void gotoHttpPanel(String url);
 }

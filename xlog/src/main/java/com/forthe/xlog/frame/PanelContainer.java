@@ -1,5 +1,7 @@
 package com.forthe.xlog.frame;
 
+import android.content.Context;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -12,9 +14,21 @@ import java.util.Stack;
 public class PanelContainer implements Container {
     private Stack<Panel> panelStack;
     private ViewGroup container;
-
+    private Context context;
     public PanelContainer(ViewGroup container) {
         this.container = container;
+        this.context = container.getContext();
+        container.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
+    }
+
+    @Override
+    public Context getContext() {
+        return context;
     }
 
     @Override
@@ -28,11 +42,25 @@ public class PanelContainer implements Container {
             panelStack = new Stack<>();
         }
 
-        container.setVisibility(View.VISIBLE);
         View v = child.getView(this);
-        container.addView(v);
+        if(v == null){
+            return;
+        }
+
+        if(child.getMode() == Panel.MODE_EXCLUSIVE && !panelStack.isEmpty()){
+            Panel pre = panelStack.peek();
+            if(null != pre){
+                container.removeView(pre.getView(this));
+                pre.pause(this);
+            }
+        }
+
         panelStack.add(child);
-        child.onAttach(this);
+        child.attach(this);
+
+        container.setVisibility(View.VISIBLE);
+        container.addView(v);
+        child.resume(this);
     }
 
     @Override
@@ -42,15 +70,29 @@ public class PanelContainer implements Container {
             return false;
         }
 
-        if(panelStack.remove(child)){
-            container.removeView(child.getView(this));
-            child.onDetach(this);
-            if(panelStack.isEmpty()){
-                container.setVisibility(View.INVISIBLE);
-            }
-            return true;
+        if(!panelStack.contains(child)){
+            return false;
         }
-        return false;
+
+        boolean isNeedResume = false;
+        if(child.getMode() == Panel.MODE_EXCLUSIVE && child.equals(panelStack.peek())){
+            isNeedResume = true;
+        }
+
+        container.removeView(child.getView(this));
+        child.pause(this);
+        panelStack.remove(child);
+        child.detach(this);
+
+        if(panelStack.isEmpty()){
+            container.setVisibility(View.INVISIBLE);
+        }else if(isNeedResume){
+            Panel pre = panelStack.peek();
+            container.addView(pre.getView(this));
+            pre.resume(this);
+        }
+
+        return true;
     }
 
     @Override
@@ -60,12 +102,19 @@ public class PanelContainer implements Container {
             return false;
         }
 
-        Panel panel = panelStack.pop();
+        Panel panel = panelStack.peek();
         if(null != panel){
             container.removeView(panel.getView(this));
-            panel.onDetach(this);
+            panel.pause(this);
+            panelStack.pop();
+            panel.detach(this);
+
             if(panelStack.isEmpty()){
                 container.setVisibility(View.INVISIBLE);
+            }else if(panel.getMode() == Panel.MODE_EXCLUSIVE){
+                Panel pre = panelStack.peek();
+                container.addView(pre.getView(this));
+                pre.resume(this);
             }
             return true;
         }
@@ -83,7 +132,8 @@ public class PanelContainer implements Container {
             Panel panel = panelStack.pop();
             if(null != panel){
                 container.removeView(panel.getView(this));
-                panel.onDetach(this);
+                panel.pause(this);
+                panel.detach(this);
             }
         }
 

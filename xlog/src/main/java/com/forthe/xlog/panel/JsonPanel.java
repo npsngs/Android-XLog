@@ -1,5 +1,6 @@
 package com.forthe.xlog.panel;
 
+import android.content.Context;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
@@ -28,13 +29,18 @@ class JsonPanel extends PanelBase {
     }
 
     @Override
-    protected View onCreateView(ViewGroup parent) {
+    protected View onCreateView(Context context, ViewGroup parent) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View v = inflater.inflate(R.layout.forthe_xlog_json_panel, parent, false);
         final TextView tv_message = (TextView) v.findViewById(R.id.tv_message_detail);
         tv_message.setMovementMethod(LinkMovementMethod.getInstance());
         ParseEngine parseEngine = new ParseEngine();
-        parseEngine.addParser(new URLParser(), new URLSpanCreator());
+        parseEngine.addParser(new URLParser(), new URLSpanCreator(){
+            @Override
+            protected void gotoHttpPanel(String url) {
+                showPanel(new HttpPanel(url));
+            }
+        });
 
         try {
             String formatJson = formatResult(json).toString();

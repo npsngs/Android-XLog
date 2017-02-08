@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/xlog_panel_bg_color"
+    android:padding="10dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ListView
+        android:divider="#00ffffff"
+        android:dividerHeight="0dp"
+        android:scrollbars="none"
+        android:id="@+id/lv_parameter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_parameter_title"
+        android:layout_above="@+id/tv_send"
+        android:layout_alignParentLeft="true"
+        />
+
+
+    <EditText
+        android:hint="host"
+        android:background="@drawable/sp_forthe_xlog_edit_bg"
+        android:textSize="14sp"
+        android:padding="8dp"
+        android:textColorHint="#787878"
+        android:textColor="#c3c3c3"
+        android:id="@+id/et_host"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_marginTop="10dp"
+        android:background="@drawable/sl_forthe_xlog_btn_bg"
+        android:textSize="16sp"
+        android:padding="8dp"
+        android:textColor="#787878"
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:text="Send"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/tv_send" />
+
+    <TextView
+        android:background="@drawable/sl_forthe_xlog_btn_bg"
+        android:textSize="14sp"
+        android:padding="8dp"
+        android:textColor="#787878"
+        android:layout_width="80dp"
+        android:gravity="center"
+        android:text="Method▽"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/et_host"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="10dp"
+        android:id="@+id/tv_method" />
+
+    <TextView
+        android:layout_marginLeft="10dp"
+        android:background="@drawable/sl_forthe_xlog_btn_bg"
+        android:textSize="14sp"
+        android:padding="8dp"
+        android:textColor="#787878"
+        android:layout_width="80dp"
+        android:gravity="center"
+        android:text="Accept▽"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/et_host"
+        android:layout_toRightOf="@+id/tv_method"
+        android:layout_marginTop="10dp"
+        android:id="@+id/tv_accept" />
+
+    <TextView
+        android:visibility="gone"
+        android:layout_marginLeft="10dp"
+        android:background="@drawable/sl_forthe_xlog_btn_bg"
+        android:textSize="14sp"
+        android:padding="8dp"
+        android:textColor="#787878"
+        android:layout_width="80dp"
+        android:gravity="center"
+        android:text="Content▽"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/et_host"
+        android:layout_toRightOf="@+id/tv_accept"
+        android:layout_marginTop="10dp"
+        android:id="@+id/tv_content_type" />
+
+    <TextView
+        android:background="@drawable/sl_forthe_xlog_btn_bg"
+        android:textSize="14sp"
+        android:padding="8dp"
+        android:textColor="#787878"
+        android:layout_width="80dp"
+        android:gravity="center"
+        android:text="View >>"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/et_host"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="10dp"
+        android:id="@+id/tv_view_url" />
+
+
+
+
+    <TextView
+        android:layout_marginTop="3dp"
+        android:textSize="10sp"
+        android:textColor="#787878"
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:singleLine="true"
+        android:text="- - - - - - - - - - - - - -  parameters  - - - - - - - - - - - - - -"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_method"
+        android:layout_alignParentLeft="true"
+        android:id="@+id/tv_parameter_title" />
+
+
+
+
+
+    <ListView
+        android:dividerHeight="0.5dp"
+        android:divider="#c3c3c3"
+        android:visibility="gone"
+        android:scrollbars="none"
+        android:id="@+id/lv_method"
+        android:layout_marginTop="5dp"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_method"
+        android:layout_alignParentLeft="true"
+        android:background="@drawable/sl_forthe_xlog_btn_bg"
+        />
+
+    <ListView
+        android:visibility="gone"
+        android:dividerHeight="0.5dp"
+        android:divider="#c3c3c3"
+        android:scrollbars="none"
+        android:id="@+id/lv_accept"
+        android:layout_marginTop="5dp"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_accept"
+        android:layout_alignLeft="@+id/tv_accept"
+        android:background="@drawable/sl_forthe_xlog_btn_bg"
+        />
+
+    <ListView
+        android:visibility="gone"
+        android:dividerHeight="0.5dp"
+        android:divider="#c3c3c3"
+        android:scrollbars="none"
+        android:id="@+id/lv_content"
+        android:layout_marginTop="5dp"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/tv_accept"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/sl_forthe_xlog_btn_bg"
+        />
+</RelativeLayout>

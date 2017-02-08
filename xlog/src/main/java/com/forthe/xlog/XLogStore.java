@@ -65,7 +65,7 @@ class XLogStore implements LogStore{
 
         try {
             fw
-            .append(DateFormat.format("[ HH:mm:ss ]", System.currentTimeMillis()))
+            .append(DateFormat.format("[HH:mm:ss]", System.currentTimeMillis()))
             .append("\n")
             .append(log)
             .append("\n")

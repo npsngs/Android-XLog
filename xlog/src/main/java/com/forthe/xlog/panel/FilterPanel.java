@@ -17,6 +17,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.forthe.xlog.R;
+import com.forthe.xlog.core.Panel;
 import com.forthe.xlog.tools.XLogUtils;
 import com.forthe.xlog.core.ItemFilter;
 import com.forthe.xlog.frame.Adapter;
@@ -36,9 +37,9 @@ public class FilterPanel extends PanelBase implements AdapterView.OnItemClickLis
     }
 
     @Override
-    protected View onCreateView(ViewGroup parent) {
+    protected View onCreateView(Context context, ViewGroup parent) {
         createFilters();
-        Context context = parent.getContext();
+        context = parent.getContext();
         int w = XLogUtils.dp2px(context, 80);
         int h = RelativeLayout.LayoutParams.WRAP_CONTENT;
         ListView lv = new ListView(parent.getContext());
@@ -68,7 +69,7 @@ public class FilterPanel extends PanelBase implements AdapterView.OnItemClickLis
         }else{
             if(3 == position){
                 if(editPanel == null){
-                    editPanel = new EditPanel();
+                    editPanel = new EditPanel(Panel.MODE_FRIENDLY);
                 }
 
                 if(!editPanel.isShow()){
@@ -198,9 +199,13 @@ public class FilterPanel extends PanelBase implements AdapterView.OnItemClickLis
     private CharSequence findRegex;
     class EditPanel extends PanelBase implements TextView.OnEditorActionListener, TextWatcher{
         private EditText editText;
+        public EditPanel(int mode) {
+            super(mode);
+        }
+
         @Override
-        protected View onCreateView(ViewGroup parent) {
-            Context context = parent.getContext();
+        protected View onCreateView(Context context, ViewGroup parent) {
+            context = parent.getContext();
             int w = RelativeLayout.LayoutParams.MATCH_PARENT;
             int h = RelativeLayout.LayoutParams.WRAP_CONTENT;
             editText = new EditText(context);

@@ -9,9 +9,11 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.forthe.xlog.core.Container;
 import com.forthe.xlog.frame.ColorPool;
 import com.forthe.xlog.frame.PanelContainer;
 import com.forthe.xlog.panel.FilterPanel;
+import com.forthe.xlog.panel.HistoryPanel;
 import com.forthe.xlog.tools.TouchListView;
 
 class XLogWindow implements View.OnClickListener {
@@ -24,10 +26,6 @@ class XLogWindow implements View.OnClickListener {
     private XLogAdapter logAdapter;
     private XLogCrashAdapter crashAdapter;
     private PanelContainer panelContainer;
-
-    boolean isCurrentActivity(Activity activity){
-        return activity != null && activity.equals(this.activity);
-    }
 
     XLogWindow(Activity activity) {
         this.activity = activity;
@@ -47,10 +45,6 @@ class XLogWindow implements View.OnClickListener {
         };
         popupWindow.setFocusable(true);
         popupWindow.setBackgroundDrawable(new ColorDrawable(0xffffffff));
-    }
-
-    void show(){
-        show(XLog.PAGE_CONFIG);
     }
 
     void show(int page){
@@ -91,7 +85,7 @@ class XLogWindow implements View.OnClickListener {
         tv_error_list.setOnClickListener(this);
         tv_title_right.setOnClickListener(this);
         tv_title_left.setOnClickListener(this);
-
+        tv_title_center.setOnClickListener(this);
         lv.setDownTouchListener(new TouchListView.OnDownTouchListener() {
             @Override
             public void onDownTouch() {
@@ -103,12 +97,11 @@ class XLogWindow implements View.OnClickListener {
     }
 
 
-    void dismiss(){
+    private void dismiss(){
         if(popupWindow.isShowing()){
             popupWindow.dismiss();
         }
     }
-
 
     private void onBackPressed(){
         if(!panelContainer.isEmpty()) {
@@ -119,6 +112,7 @@ class XLogWindow implements View.OnClickListener {
     }
 
     private FilterPanel filterPanel;
+    private HistoryPanel historyPanel;
     @Override
     public void onClick(View v) {
         int id = v.getId();
@@ -129,16 +123,39 @@ class XLogWindow implements View.OnClickListener {
                 XLog.clearLog();
                 logAdapter.clear();
             }
-        } else if(R.id.tv_title_left == id){
-            if(currentPage == XLog.PAGE_LOGS){
-                if(null == filterPanel){
+        } else if(R.id.tv_title_left == id) {
+            if (currentPage == XLog.PAGE_LOGS) {
+                if (null == filterPanel) {
                     filterPanel = new FilterPanel(logAdapter);
                 }
 
-                if(!filterPanel.isShow()){
+                if (!filterPanel.isShow()) {
                     panelContainer.showPanel(filterPanel);
-                }else{
+                } else {
                     panelContainer.dismissPanel(filterPanel);
+                }
+            }
+        } else if(R.id.tv_title_center == id){
+            if (currentPage == XLog.PAGE_LOGS) {
+                if(historyPanel == null){
+                    historyPanel = new HistoryPanel(XLog.getLogSaveDir()) {
+                        @Override
+                        public void onAttach(Container container) {
+                            super.onAttach(container);
+                            tv_title_center.setText("Log △");
+                        }
+                        @Override
+                        public void onDetach(Container container) {
+                            super.onDetach(container);
+                            tv_title_center.setText("Log ▽");
+                        }
+                    };
+                }
+
+                if (!historyPanel.isShow()) {
+                    panelContainer.showPanel(historyPanel);
+                } else {
+                    panelContainer.dismissPanel(historyPanel);
                 }
             }
         } else if(R.id.tv_config_list == id){
@@ -151,7 +168,6 @@ class XLogWindow implements View.OnClickListener {
     }
 
     /**
-     * @param page
      * 0  switches
      * 1  Logs
      * 2  Error Logs
@@ -166,7 +182,7 @@ class XLogWindow implements View.OnClickListener {
         switch (page){
             case XLog.PAGE_CONFIG:
                 tv_config_list.setSelected(true);
-                tv_title_center.setText("DEBug");
+                tv_title_center.setText("Config");
                 tv_title_right.setText("");
                 tv_title_left.setText("");
                 lv.setAdapter(configAdapter);
@@ -174,7 +190,7 @@ class XLogWindow implements View.OnClickListener {
             case XLog.PAGE_LOGS:
                 tv_log_list.setSelected(true);
                 tv_title_left.setText("filter");
-                tv_title_center.setText("Log");
+                tv_title_center.setText("Log ▽");
                 tv_title_right.setText("clear");
                 lv.setAdapter(logAdapter);
                 lv.setSelection(logAdapter.getCount());

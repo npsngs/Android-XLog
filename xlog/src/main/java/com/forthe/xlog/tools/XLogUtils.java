@@ -1,8 +1,12 @@
 package com.forthe.xlog.tools;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.provider.Browser;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.io.File;
 
@@ -33,6 +37,18 @@ public class XLogUtils {
         intent.setType("file/*");
         intent.putExtra(Intent.EXTRA_STREAM, "file://"+filePath);
         from.startActivity(intent);
+    }
+
+
+    public static void viewUrl(Context context, String url){
+        Uri uri = Uri.parse(url);
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
+        try {
+            context.startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            Log.w("URLSpan", "Actvity was not found for intent, " + intent.toString());
+        }
     }
 
 }

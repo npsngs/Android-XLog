@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">XLog</string>
+
+    <string-array name="http_method">
+        <item>GET</item>
+        <item>POST</item>
+    </string-array>
 </resources>

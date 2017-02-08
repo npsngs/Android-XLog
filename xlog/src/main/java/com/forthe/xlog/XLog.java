@@ -122,9 +122,9 @@ public class XLog {
     private static void addLog(String lvl, String tag, String msg){
         String log;
         if(TextUtils.isEmpty(tag)){
-            log = String.format("%s\t\t%s\t%s", lvl,tag,msg);
+            log = String.format("%s\t%s\t%s", lvl,tag,msg);
         }else{
-            log = String.format("%s\t\t%s", lvl,msg);
+            log = String.format("%s\t%s", lvl,msg);
         }
 
         logReceiver.receiveLog(log);
@@ -147,21 +147,12 @@ public class XLog {
         XLog.logNotifier = logNotifier;
     }
 
-    private static XLogWindow buGPopupWindow = null;
 
     static final int PAGE_CONFIG = 0;
     static final int PAGE_LOGS = 1;
     static final int PAGE_CRASH = 2;
     static void show(Activity activity, int page){
-        if(buGPopupWindow == null){
-            buGPopupWindow = new XLogWindow(activity);
-        }else {
-            if(!buGPopupWindow.isCurrentActivity(activity)){
-                buGPopupWindow.dismiss();
-                buGPopupWindow = new XLogWindow(activity);
-            }
-        }
-        buGPopupWindow.show(page);
+        new XLogWindow(activity).show(page);
     }
 
     public static void show(Activity activity){
@@ -174,12 +165,6 @@ public class XLog {
 
     public static void showCrash(Activity activity){
         show(activity, PAGE_CRASH);
-    }
-
-    public static void dismiss(Activity activity){
-        if(buGPopupWindow != null && buGPopupWindow.isCurrentActivity(activity)){
-            buGPopupWindow.dismiss();
-        }
     }
 
     static XLogConfig getConfig() {

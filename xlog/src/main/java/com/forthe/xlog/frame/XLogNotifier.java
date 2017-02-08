@@ -1,4 +1,4 @@
-package com.forthe.xlog;
+package com.forthe.xlog.frame;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -6,9 +6,9 @@ import android.os.Message;
 
 import com.forthe.xlog.core.LogNotifier;
 
-abstract class XLogNotifier implements LogNotifier{
+public abstract class XLogNotifier implements LogNotifier{
     private Handler handler = null;
-    XLogNotifier(){
+    public XLogNotifier(){
         if(handler == null){
             handler = new Handler(Looper.getMainLooper()){
                 @Override
