@@ -170,4 +170,9 @@ public class XLog {
     static XLogConfig getConfig() {
         return config;
     }
+
+
+    static void onClearRef(){
+        setLogNotifier(null);
+    }
 }

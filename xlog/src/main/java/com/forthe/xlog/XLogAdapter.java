@@ -21,4 +21,6 @@ class XLogAdapter extends LogAdapter{
             }
         });
     }
+
+
 }

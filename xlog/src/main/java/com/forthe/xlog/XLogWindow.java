@@ -30,7 +30,7 @@ class XLogWindow implements View.OnClickListener {
     XLogWindow(Activity activity) {
         this.activity = activity;
         ColorPool.init(activity);
-        View root = View.inflate(activity, R.layout.forthe_xlog_pop_window, null);
+        View root = View.inflate(activity.getApplication(), R.layout.forthe_xlog_pop_window, null);
         initView(root);
         popupWindow = new PopupWindow(root, ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT){
@@ -39,6 +39,7 @@ class XLogWindow implements View.OnClickListener {
                 if(!panelContainer.isEmpty()) {
                     panelContainer.dismissChild();
                 }else{
+                    XLog.onClearRef();
                     super.dismiss();
                 }
             }
@@ -65,9 +66,9 @@ class XLogWindow implements View.OnClickListener {
         RelativeLayout rl_panel_container = (RelativeLayout) root.findViewById(R.id.rl_panel_container);
         panelContainer = new PanelContainer(rl_panel_container);
 
-        configAdapter = new XLogConfigAdapter(activity);
-        logAdapter = new XLogAdapter(activity, panelContainer);
-        crashAdapter = new XLogCrashAdapter(activity, panelContainer);
+        configAdapter = new XLogConfigAdapter(activity.getApplication());
+        logAdapter = new XLogAdapter(activity.getApplication(), panelContainer);
+        crashAdapter = new XLogCrashAdapter(activity.getApplication(), panelContainer);
 
         lv = (TouchListView) root.findViewById(R.id.lv);
         tv_config_list = (TextView) root.findViewById(R.id.tv_config_list);
