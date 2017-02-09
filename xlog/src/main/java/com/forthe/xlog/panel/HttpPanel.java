@@ -1,13 +1,19 @@
 package com.forthe.xlog.panel;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -89,18 +95,27 @@ public class HttpPanel extends PanelBase implements View.OnClickListener{
         super.onAttach(container);
         parameterAdapter = new ParameterAdapter(container.getContext());
         lv_parameter.setAdapter(parameterAdapter);
-        Uri uri = Uri.parse(url);
-        host_url = String.format("%s://%s%s",uri.getScheme(),uri.getAuthority(),uri.getPath());
-        et_host.setText(host_url);
-        Set<String> keys = uri.getQueryParameterNames();
-        if(null == keys || keys.isEmpty()){
-            lv_parameter.setVisibility(View.INVISIBLE);
-        }else{
-            for(String key:keys) {
-                parameterAdapter.addData(new KeyValuePair(key, uri.getQueryParameter(key)));
+        et_host.addTextChangedListener(new MyTextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                host_url = et_host.getText().toString();
             }
-        }
+        });
 
+        try{
+            Uri uri = Uri.parse(url);
+            host_url = String.format("%s://%s%s",uri.getScheme(),uri.getAuthority(),uri.getPath());
+            et_host.setText(host_url);
+            Set<String> keys = uri.getQueryParameterNames();
+            if(null != keys && !keys.isEmpty()){
+                for(String key:keys) {
+                    parameterAdapter.addData(new KeyValuePair(key, uri.getQueryParameter(key)));
+                }
+            }
+        }catch (Exception e){
+            host_url = url;
+            et_host.setText(host_url);
+        }
     }
 
     @Override
@@ -127,7 +142,21 @@ public class HttpPanel extends PanelBase implements View.OnClickListener{
                 lv_content.setVisibility(View.VISIBLE);
             }
         }else if(R.id.tv_view_url == id){
-            XLogUtils.viewUrl(v.getContext(), url);
+            String realUrl = host_url;
+            List<KeyValuePair> pairs = parameterAdapter.getDataList();
+            if(parameterAdapter.getCount() > 0){
+                StringBuilder params = new StringBuilder();
+                for(KeyValuePair pair:pairs){
+                    if(pair.isValid()){
+                        params.append(pair.key).append("=").append(pair.value).append("&");
+                    }
+                }
+                if(params.length() > 0){
+                    params.deleteCharAt(params.length()-1);
+                    realUrl = realUrl+"?"+params.toString();
+                }
+            }
+            XLogUtils.viewUrl(v.getContext(), realUrl);
         }
     }
 
@@ -140,35 +169,134 @@ public class HttpPanel extends PanelBase implements View.OnClickListener{
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View v = convertView;
-            ParameterHolder holder;
-            if(null == v){
-                v = View.inflate(parent.getContext(), R.layout.forthe_xlog_httpparam_item, null);
-                holder = new ParameterHolder(v);
-                v.setTag(holder);
+            if(0 == getItemViewType(position)){
+                ParameterHolder holder;
+                if(null == v){
+                    v = View.inflate(parent.getContext(), R.layout.forthe_xlog_httpparam_item, null);
+                    holder = new ParameterHolder(v);
+                    v.setTag(holder);
+                }else{
+                    holder = (ParameterHolder) v.getTag();
+                }
+                holder.bind(position);
             }else{
-                holder = (ParameterHolder) v.getTag();
+                if(null == v){
+                    TextView tv_add_btn = new TextView(getContext());
+                    tv_add_btn.setTextColor(0xff787878);
+                    tv_add_btn.setPadding(0,10,0,10);
+                    tv_add_btn.setTextSize(18f);
+                    tv_add_btn.setText("+");
+                    tv_add_btn.setGravity(Gravity.CENTER);
+                    tv_add_btn.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT,AbsListView.LayoutParams.WRAP_CONTENT));
+                    tv_add_btn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            ParameterAdapter.this.addData(new KeyValuePair("",""));
+                        }
+                    });
+                    v = tv_add_btn;
+                }
             }
-
-            holder.bind(position);
             return v;
         }
 
+        @Override
+        public int getCount() {
+            return super.getCount()+1;
+        }
+
+        @Override
+        public int getViewTypeCount() {
+            return 2;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            if(position == getCount()-1){
+                return 1;
+            }else{
+                return 0;
+            }
+        }
 
         private class ParameterHolder {
+            private int position;
             private EditText et_key, et_value;
             public ParameterHolder(View v){
                 et_key = (EditText) v.findViewById(R.id.et_key);
                 et_value = (EditText) v.findViewById(R.id.et_value);
+                et_key.addTextChangedListener(new MyTextWatcher(){
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        KeyValuePair valuePair = getItem(position);
+                        valuePair.key = et_key.getText().toString();
+                    }
+                });
+
+
+                et_value.addTextChangedListener(new MyTextWatcher() {
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        KeyValuePair valuePair = getItem(position);
+                        valuePair.value = et_value.getText().toString();
+                    }
+                });
+
+
+                et_key.setOnKeyListener(new View.OnKeyListener() {
+                    @Override
+                    public boolean onKey(View v, int keyCode, KeyEvent event) {
+                        if(keyCode == KeyEvent.KEYCODE_DEL){
+                            KeyValuePair valuePair = getItem(position);
+                            valuePair.key = et_key.getText().toString();
+                            if(TextUtils.isEmpty(valuePair.key) && TextUtils.isEmpty(valuePair.value)){
+                                removeData(position);
+                                return true;
+                            }
+                        }
+                        return false;
+                    }
+                });
+
+
+                et_value.setOnKeyListener(new View.OnKeyListener() {
+                    @Override
+                    public boolean onKey(View v, int keyCode, KeyEvent event) {
+                        if(keyCode == KeyEvent.KEYCODE_DEL){
+                            KeyValuePair valuePair = getItem(position);
+                            valuePair.value = et_value.getText().toString();
+                            if(TextUtils.isEmpty(valuePair.value)){
+                                et_key.requestFocus();
+                                if(!TextUtils.isEmpty(valuePair.key)){
+                                    et_key.setSelection(valuePair.key.length());
+                                }
+                                return true;
+                            }
+                        }
+                        return false;
+                    }
+                });
+
             }
 
             public void bind(int position){
+                this.position = position;
                 KeyValuePair valuePair = getItem(position);
                 et_key.setText(valuePair.key);
                 et_value.setText(valuePair.value);
             }
         }
+
     }
 
+    private abstract  class MyTextWatcher implements TextWatcher{
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+        @Override
+        public void afterTextChanged(Editable s) {}
+    }
 
     private class KeyValuePair{
         String key;
@@ -300,23 +428,32 @@ public class HttpPanel extends PanelBase implements View.OnClickListener{
 
     private void executeSend(){
         tv_send.setEnabled(false);
+        tv_send.setText("Loading..");
         new Thread(){
             @Override
             public void run() {
-                String ret;
+                Response response = null;
                 try {
-                    ret = send();
+                    response = send();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    ret = e.getMessage();
+                    if(null == response){
+                        response = new Response();
+                    }
+                    response.result = e.getMessage();
                 }
 
-                final String finalRet = ret;
+                final Response  finalResponse = response;
                 tv_send.post(new Runnable() {
                     @Override
                     public void run() {
                         tv_send.setEnabled(true);
-                        showPanel(new TextPanel(finalRet, Color.WHITE));
+                        tv_send.setText("Send");
+                        if(finalResponse.isText){
+                            showPanel(new TextPanel(finalResponse.result, Color.WHITE));
+                        }else{
+                            showPanel(new MediaPanel(finalResponse.result, (Bitmap) finalResponse.extras));
+                        }
                     }
                 });
             }
@@ -327,19 +464,35 @@ public class HttpPanel extends PanelBase implements View.OnClickListener{
     }
 
 
-    private String send() throws Exception{
+    private Response send() throws Exception{
+        Response response = new Response();
         StringBuilder sb = new StringBuilder("[Request>>]\n");
         Map<String, List<String>> map;
         Set<String> keys;
 
         HttpURLConnection conn;
         boolean isGetMethod = method.equals("GET");
-        sb.append(method).append(" ").append(isGetMethod?url:host_url).append("\n");
 
         if(isGetMethod){
-            URL url = new URL(this.url);
+            String realUrl = host_url;
+            List<KeyValuePair> pairs = parameterAdapter.getDataList();
+            if(parameterAdapter.getCount() > 0){
+                StringBuilder params = new StringBuilder();
+                for(KeyValuePair pair:pairs){
+                    if(pair.isValid()){
+                        params.append(pair.key).append("=").append(pair.value).append("&");
+                    }
+                }
+                if(params.length() > 0){
+                    params.deleteCharAt(params.length()-1);
+                    realUrl = realUrl+"?"+params.toString();
+                }
+            }
+            sb.append(method).append(" ").append(realUrl).append("\n");
+            URL url = new URL(realUrl);
             conn = (HttpURLConnection) url.openConnection();
         }else{
+            sb.append(method).append(" ").append(host_url).append("\n");
             URL url = new URL(et_host.getText().toString());
             conn = (HttpURLConnection) url.openConnection();
         }
@@ -404,21 +557,48 @@ public class HttpPanel extends PanelBase implements View.OnClickListener{
         }
 
         sb.append("\n");
+
+
         try{
-            InputStream is = conn.getInputStream();
-            BufferedReader br = new BufferedReader(new InputStreamReader(is));
-            String line;
-            while ((line = br.readLine()) != null) {
-                sb.append(line).append("\n");
+            String contentType = conn.getContentType();
+            if(!TextUtils.isEmpty(contentType)){
+                if(contentType.matches("image[\\w\\W]*")){
+                    response.isText = false;
+                }
             }
-            br.close();
+
+            InputStream is = conn.getInputStream();
+            if(response.isText){
+                BufferedReader br = new BufferedReader(new InputStreamReader(is));
+                String line;
+                while ((line = br.readLine()) != null) {
+                    sb.append(line).append("\n");
+                }
+                br.close();
+            }else{
+                Bitmap bitmap = BitmapFactory.decodeStream(is);
+                sb.append("Image  W:").append(bitmap.getWidth()).append("  H:").append(bitmap.getHeight());
+                response.extras = bitmap;
+            }
             is.close();
         }catch (Exception e){
             sb.append(e.getMessage());
         }
 
-        return sb.toString();
+
+        response.result = sb.toString();
+
+
+        return response;
     }
+
+    private class Response{
+        boolean isText = true;
+        String result;
+        Object extras;
+    }
+
+
 
     private List<String> getContentTypeList(){
         String[] ls = new String[]{

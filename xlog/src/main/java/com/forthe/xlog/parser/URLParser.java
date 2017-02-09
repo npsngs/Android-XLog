@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 public class URLParser implements LogParser {
     private Pattern pattern;
     public URLParser() {
-        pattern = Pattern.compile("([\\s\\S]*?)(http:[^\\s^\\]^,'\"]+)[\\s\\S]*?");
+        pattern = Pattern.compile("http://[^\\s\\]\\])},'\"]+");
     }
 
     @Override
@@ -20,8 +20,8 @@ public class URLParser implements LogParser {
                 result = new SparseIntArray();
             }
 
-            int start = matcher.start(2);
-            int end = matcher.end(2);
+            int start = matcher.start(0);
+            int end = matcher.end(0);
             result.append(start, end);
         }
         return result;

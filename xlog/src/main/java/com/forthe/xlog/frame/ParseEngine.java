@@ -30,6 +30,7 @@ public class ParseEngine{
     private List<ParserItem> parsers;
     private Handler handler;
     private ExecutorService executorService;
+
     public ParseEngine() {
         executorService = Executors.newSingleThreadExecutor();
         handler = new Handler(Looper.getMainLooper()){
@@ -45,10 +46,10 @@ public class ParseEngine{
     private void onHandleMessage(Message msg){
         switch (msg.what){
             case MSG_FINISH:
+                ((ParserWorker) msg.obj).onParseUpdate();
                 break;
             case MSG_UPDATE:
-                ParserWorker worker = (ParserWorker) msg.obj;
-                worker.onParseUpdate();
+                ((ParserWorker) msg.obj).onParseUpdate();
                 break;
         }
     }
@@ -79,12 +80,15 @@ public class ParseEngine{
         private SpannableStringBuilder spannableBuilder;
         private String inputStr;
         private OnParseCallback callback;
-
+        private boolean isLazyUpdate = false;
 
         ParserWorker(String inputStr, OnParseCallback callback) {
             this.inputStr = inputStr;
             this.callback = callback;
             this.spannableBuilder = new SpannableStringBuilder(inputStr);
+            if(inputStr.length() > 1024*50){
+                isLazyUpdate = true;
+            }
         }
 
         @Override
@@ -97,12 +101,17 @@ public class ParseEngine{
                         SpanCreator spanCreator = item.spanCreator;
                         createSpan(spanCreator, matchResult);
                     }
-                    handler.obtainMessage(MSG_UPDATE, this).sendToTarget();
+                    if(!isLazyUpdate){
+                        handler.obtainMessage(MSG_UPDATE, this).sendToTarget();
+                    }
                 }catch (Exception e){
                     e.printStackTrace();
                 }
             }
-            handler.obtainMessage(MSG_FINISH, this).sendToTarget();
+
+            if(isLazyUpdate){
+                handler.obtainMessage(MSG_FINISH, this).sendToTarget();
+            }
         }
 
         private void createSpan(SpanCreator spanCreator, SparseIntArray matchResult){
