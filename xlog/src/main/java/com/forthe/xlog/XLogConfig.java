@@ -90,7 +90,7 @@ abstract class XLogConfig {
     }
 
     boolean switchInfo() {
-        if (isLogcatON()) {
+        if (isInfoON()) {
             flag = flag & 0xffffffdf;
         } else {
             flag = flag | 0x00000020;
