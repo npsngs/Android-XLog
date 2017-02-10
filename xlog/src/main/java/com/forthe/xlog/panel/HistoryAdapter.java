@@ -14,7 +14,6 @@ import com.forthe.xlog.frame.ColorPool;
 import com.forthe.xlog.tools.XLogUtils;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -113,8 +112,8 @@ class HistoryAdapter extends Adapter<HistoryAdapter.FileEntry> {
 
         @Override
         public boolean onLongClick(View v) {
-            String crashLog = getFileStr(position);
-            XLogUtils.sendText(getContext(), crashLog);
+            FileEntry fileEntry = getItem(position);
+            XLogUtils.sendFileToQQ(getContext(), fileEntry.file.getAbsolutePath());
             return true;
         }
     }
@@ -133,28 +132,6 @@ class HistoryAdapter extends Adapter<HistoryAdapter.FileEntry> {
             return (int) (rhs.lastModified() - lhs.lastModified());
         }
     };
-
-
-    private String getFileStr(int pos){
-        try{
-            FileEntry fileEntry = getItem(pos);
-            FileReader fr = new FileReader(fileEntry.file);
-            char[] buffer = new char[1024];
-            StringBuilder builder = new StringBuilder();
-            int ret;
-            while(-1 != (ret = fr.read(buffer))){
-                String s = new String(buffer, 0, ret);
-                builder.append(s);
-            }
-            fr.close();
-            return builder.toString();
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-
-        return "";
-    }
-
 
     class FileEntry{
         File file;
