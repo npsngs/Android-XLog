@@ -21,6 +21,12 @@ public class PanelContainer implements Container {
         container.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                if(null != panelStack && !panelStack.isEmpty()){
+                   Panel panel = panelStack.peek();
+                    if(panel.getMode() == Panel.MODE_FRIENDLY){
+                        return false;
+                    }
+                }
                 return true;
             }
         });

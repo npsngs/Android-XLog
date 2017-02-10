@@ -18,6 +18,13 @@ public class XLog {
     private static XLogStore logStore;
     private static XLogConfig config;
     private static boolean hasInit = false;
+    public static boolean isActivated(){
+        if(null != config){
+            return config.isActivated();
+        }
+        return false;
+    }
+
     public static void init(Context context){
         init(context,null);
     }
@@ -91,6 +98,20 @@ public class XLog {
             }
         }
     }
+
+    public static void i(String log){
+        i("", log);
+    }
+
+    public static void i(String tag, String log){
+        if(config.isDebugON()){
+            addLog("I",tag,log);
+            if(config.isLogcatON()){
+                Log.d(tag,log);
+            }
+        }
+    }
+
 
     public static void w(String log){
         w("", log);
@@ -174,5 +195,27 @@ public class XLog {
 
     static void onClearRef(){
         setLogNotifier(null);
+    }
+
+
+
+    public static List<String> getExtraItems() {
+        if(null != config){
+            return config.getExtraItems();
+        }
+        return null;
+    }
+
+    public static void addSwitchItem(String key){
+        if(null != config){
+            config.addSwitchItem(key);
+        }
+    }
+
+    public static boolean getSwitchItem(String key){
+        if(null != config){
+            return config.getSwitchItem(key);
+        }
+        return false;
     }
 }

@@ -10,6 +10,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.forthe.xlog.core.Container;
+import com.forthe.xlog.core.Panel;
 import com.forthe.xlog.frame.ColorPool;
 import com.forthe.xlog.frame.PanelContainer;
 import com.forthe.xlog.panel.FilterPanel;
@@ -127,7 +128,7 @@ class XLogWindow implements View.OnClickListener {
         } else if(R.id.tv_title_left == id) {
             if (currentPage == XLog.PAGE_LOGS) {
                 if (null == filterPanel) {
-                    filterPanel = new FilterPanel(logAdapter);
+                    filterPanel = new FilterPanel(Panel.MODE_FRIENDLY,logAdapter);
                 }
 
                 if (!filterPanel.isShow()) {

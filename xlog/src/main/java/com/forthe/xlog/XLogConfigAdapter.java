@@ -8,29 +8,41 @@ import android.widget.Switch;
 
 import com.forthe.xlog.tools.XLogUtils;
 
+import java.util.List;
+
 
 class XLogConfigAdapter extends BaseAdapter {
     private Context context = null;
     private String[] items;
     private int padding;
     private XLogConfig config;
+    private List<String> extraItems;
     XLogConfigAdapter(Context context) {
         this.context = context;
         items = new String[]{
-            "调试信息","警告信息","错误信息","保存信息","启用Logcat"
+            "调试","信息", "警告","错误","保存","Logcat"
         };
+        extraItems = XLog.getExtraItems();
         padding = XLogUtils.dp2px(context, 12f);
         config = XLog.getConfig();
     }
 
     @Override
     public int getCount() {
-        return items.length;
+        if(null == extraItems){
+            return items.length;
+        }else{
+            return items.length + extraItems.size();
+        }
     }
 
     @Override
     public String getItem(int position) {
-        return items[position];
+        if(position < items.length){
+            return items[position];
+        }else{
+            return extraItems.get(position - items.length);
+        }
     }
 
     @Override
@@ -75,16 +87,24 @@ class XLogConfigAdapter extends BaseAdapter {
                     sw.setChecked(config.isDebugON());
                     break;
                 case 1:
-                    sw.setChecked(config.isWarnON());
+                    sw.setChecked(config.isInfoON());
                     break;
                 case 2:
-                    sw.setChecked(config.isErrorON());
+                    sw.setChecked(config.isWarnON());
                     break;
                 case 3:
-                    sw.setChecked(config.isSaveON());
+                    sw.setChecked(config.isErrorON());
                     break;
                 case 4:
+                    sw.setChecked(config.isSaveON());
+                    break;
+                case 5:
                     sw.setChecked(config.isLogcatON());
+                    break;
+                default:
+                    if(position >= items.length){
+                        sw.setChecked(config.getSwitchItem(extraItems.get(position-items.length)));
+                    }
                     break;
             }
         }
@@ -97,16 +117,24 @@ class XLogConfigAdapter extends BaseAdapter {
                     config.switchDebug();
                     break;
                 case 1:
-                    config.switchWarn();
+                    config.switchInfo();
                     break;
                 case 2:
-                    config.switchError();
+                    config.switchWarn();
                     break;
                 case 3:
-                    config.switchSave();
+                    config.switchError();
                     break;
                 case 4:
+                    config.switchSave();
+                    break;
+                case 5:
                     config.switchLogcat();
+                    break;
+                default:
+                    if(position >= items.length){
+                        config.switchExtraItem(extraItems.get(position-items.length));
+                    }
                     break;
             }
         }

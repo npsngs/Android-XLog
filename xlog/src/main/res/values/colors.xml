@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="xlog_d_color">#046604</color>
+    <color name="xlog_i_color">#354bc9</color>
     <color name="xlog_w_color">#e38204</color>
     <color name="xlog_e_color">#ff2200</color>
     <color name="xlog_json_color">#07aa07</color>

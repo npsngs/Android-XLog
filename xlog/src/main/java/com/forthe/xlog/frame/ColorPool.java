@@ -7,6 +7,7 @@ import com.forthe.xlog.R;
 
 public class ColorPool {
     public static int d_color;
+    public static int i_color;
     public static int w_color;
     public static int e_color;
     public static int json_color;
@@ -19,6 +20,7 @@ public class ColorPool {
 
         Resources resources = context.getResources();
         d_color = resources.getColor(R.color.xlog_d_color);
+        i_color = resources.getColor(R.color.xlog_i_color);
         w_color = resources.getColor(R.color.xlog_w_color);
         e_color = resources.getColor(R.color.xlog_e_color);
         json_color = resources.getColor(R.color.xlog_json_color);

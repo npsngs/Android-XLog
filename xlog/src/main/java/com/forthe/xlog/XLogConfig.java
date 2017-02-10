@@ -3,6 +3,9 @@ package com.forthe.xlog;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.ArrayList;
+import java.util.List;
+
 abstract class XLogConfig {
     private int flag =0x00;
     private SharedPreferences sp;
@@ -82,6 +85,22 @@ abstract class XLogConfig {
         return isLogcatON();
     }
 
+    boolean isInfoON(){
+        return 0 != (flag&32);
+    }
+
+    boolean switchInfo() {
+        if (isLogcatON()) {
+            flag = flag & 0xffffffdf;
+        } else {
+            flag = flag | 0x00000020;
+        }
+        saveConfig();
+        return isLogcatON();
+    }
+
+
+
     boolean isActivated(){
         return flag != 0x0;
     }
@@ -91,4 +110,39 @@ abstract class XLogConfig {
     }
 
     protected abstract void onConfigChange();
+
+
+    private List<String> extraItems;
+    List<String> getExtraItems() {
+        return extraItems;
+    }
+
+    void addSwitchItem(String key){
+        if(extraItems == null){
+            extraItems = new ArrayList<>();
+        }
+
+        if(extraItems.contains(key)){
+            return;
+        }
+
+        extraItems.add(key);
+    }
+
+    boolean getSwitchItem(String key){
+        if(null != extraItems && extraItems.contains(key)){
+            return sp.getBoolean(key, false);
+        }
+        return false;
+    }
+
+    boolean switchExtraItem(String key){
+        if(null != extraItems && extraItems.contains(key)){
+            boolean item = sp.getBoolean(key, false);
+            sp.edit().putBoolean(key, !item).apply();
+            return !item;
+        }
+        return false;
+    }
+
 }

@@ -63,8 +63,10 @@ public class LogAdapter extends FilterAdapter<String>{
                 tv.setTextColor(ColorPool.e_color);
             }else if(log.startsWith("W")){
                 tv.setTextColor(ColorPool.w_color);
-            }else if(log.startsWith("D")){
+            }else if(log.startsWith("D")) {
                 tv.setTextColor(ColorPool.d_color);
+            }else if(log.startsWith("I")){
+                tv.setTextColor(ColorPool.i_color);
             }else{
                 tv.setTextColor(Color.GRAY);
             }
@@ -86,6 +88,8 @@ public class LogAdapter extends FilterAdapter<String>{
                     container.showPanel(new TextPanel(log, ColorPool.w_color));
                 }else if(log.startsWith("D")){
                     container.showPanel(new TextPanel(log, ColorPool.d_color));
+                }else if(log.startsWith("I")){
+                    container.showPanel(new TextPanel(log, ColorPool.i_color));
                 }else{
                     container.showPanel(new TextPanel(log, Color.GRAY));
                 }

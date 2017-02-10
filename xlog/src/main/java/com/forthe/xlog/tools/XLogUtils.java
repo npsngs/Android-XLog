@@ -1,5 +1,6 @@
 package com.forthe.xlog.tools;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -25,6 +26,9 @@ public class XLogUtils {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/*");
         intent.putExtra(Intent.EXTRA_TEXT, text);
+        if(!(from instanceof Activity)){
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
         from.startActivity(intent);
     }
 

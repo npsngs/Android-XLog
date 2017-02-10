@@ -32,7 +32,8 @@ public class FilterPanel extends PanelBase implements AdapterView.OnItemClickLis
     private FilterAdapter<String> filterAdapter;
     private List<MYFilter> filters;
     private MyAdapter adapter;
-    public FilterPanel(FilterAdapter<String> filterAdapter) {
+    public FilterPanel(int mode, FilterAdapter<String> filterAdapter) {
+        super(mode);
         this.filterAdapter = filterAdapter;
     }
 
@@ -67,7 +68,7 @@ public class FilterPanel extends PanelBase implements AdapterView.OnItemClickLis
             filter.setUsed(false);
             filterAdapter.removeItemFilter(filter);
         }else{
-            if(3 == position){
+            if(4 == position){
                 if(editPanel == null){
                     editPanel = new EditPanel(Panel.MODE_FRIENDLY);
                 }
@@ -139,6 +140,16 @@ public class FilterPanel extends PanelBase implements AdapterView.OnItemClickLis
                     return false;
                 }
                 return item.startsWith("D");
+            }
+        });
+
+        filters.add(new MYFilter("I") {
+            @Override
+            public boolean filter(String item) {
+                if(TextUtils.isEmpty(item)){
+                    return false;
+                }
+                return item.startsWith("I");
             }
         });
 
@@ -240,7 +251,7 @@ public class FilterPanel extends PanelBase implements AdapterView.OnItemClickLis
             if(EditorInfo.IME_ACTION_SEARCH == actionId){
                 compile();
 
-                MYFilter filter = adapter.getItem(3);
+                MYFilter filter = adapter.getItem(4);
                 if(filter.isUsed()){
                     filterAdapter.onFilterChange();
                 }else{

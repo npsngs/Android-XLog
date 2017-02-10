@@ -31,6 +31,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
         findViewById(R.id.btn_start_activity).setOnClickListener(this);
 
         XLog.init(this, getSaveDir());
+        XLog.addSwitchItem("isTest");
     }
 
     private String getSaveDir(){
@@ -49,7 +50,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 XLog.show(this);
                 break;
             case R.id.btn_sendLog:
-                XLog.e("test",".view.ViewPager.setCurrentItem(ViewPager.java:562)\n" +
+                XLog.i("test",".view.ViewPager.setCurrentItem(ViewPager.java:562)\n" +
                         "11-03 [{\"key\":\"xiaoming\"},{\"value\":\"hahayixiao\",\"name\":\"xxoo\"},{x}]18:27:43.042 14150-14150/com.yxd.live W/System.err:     at com.yxd.live.vu.modules.HomeBannerVu.autoRun(HomeBannerVu.java:172)\n" +
                         "11-03 18:27:43.042 14150-14150/com.yxd.live W/System.err:     at com.yxd.live.vu.modules.HomeBannerVu$1.run(HomeBannerVu.java:63)\n" +
                         "11-03 18:27:43.042 14150-{x}141{{{{}50/com.yxd.{\"bb\":{\"s\":\"http://www.baidu.com\"},\"aa\":\"c\"}live W/System.err:     at android.os.http://www.sss.com?ss1=1223,Handler.handleCallback(Handler.java:739)\n" +
