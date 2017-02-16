@@ -16,13 +16,20 @@ import com.forthe.xlog.panel.TextPanel;
 import com.forthe.xlog.tools.XLogUtils;
 
 
-public class LogAdapter extends FilterAdapter<String>{
+public abstract class LogAdapter extends FilterAdapter<String>{
     protected Container container;
     public LogAdapter(Context mContext, Container container) {
         super(mContext);
         this.container = container;
     }
 
+    public LogAdapter(Context mContext) {
+        super(mContext);
+    }
+
+    public void setContainer(Container container) {
+        this.container = container;
+    }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -59,17 +66,8 @@ public class LogAdapter extends FilterAdapter<String>{
             this.position = position;
 
             String log = getItem(position);
-            if(log.startsWith("E")){
-                tv.setTextColor(ColorPool.e_color);
-            }else if(log.startsWith("W")){
-                tv.setTextColor(ColorPool.w_color);
-            }else if(log.startsWith("D")) {
-                tv.setTextColor(ColorPool.d_color);
-            }else if(log.startsWith("I")){
-                tv.setTextColor(ColorPool.i_color);
-            }else{
-                tv.setTextColor(Color.GRAY);
-            }
+            String typeTag = getTypeTag(log);
+            tv.setTextColor(getColorByType(typeTag));
 
             if(!TextUtils.isEmpty(log) && log.length() > 200){
                 log = log.substring(0, 180);
@@ -82,17 +80,8 @@ public class LogAdapter extends FilterAdapter<String>{
         public void onClick(View v) {
             if(null != container){
                 String log = getItem(position);
-                if(log.startsWith("E")){
-                    container.showPanel(new TextPanel(log, ColorPool.e_color));
-                }else if(log.startsWith("W")){
-                    container.showPanel(new TextPanel(log, ColorPool.w_color));
-                }else if(log.startsWith("D")){
-                    container.showPanel(new TextPanel(log, ColorPool.d_color));
-                }else if(log.startsWith("I")){
-                    container.showPanel(new TextPanel(log, ColorPool.i_color));
-                }else{
-                    container.showPanel(new TextPanel(log, Color.GRAY));
-                }
+                String typeTag = getTypeTag(log);
+                container.showPanel(new TextPanel(log, getColorByType(typeTag)));
             }
         }
 
@@ -103,4 +92,24 @@ public class LogAdapter extends FilterAdapter<String>{
             return true;
         }
     }
+
+    private int getColorByType(String typeTag){
+        switch (typeTag){
+            case "E":
+                return ColorPool.e_color;
+            case "I":
+                return ColorPool.i_color;
+            case "D":
+                return ColorPool.d_color;
+            case "W":
+                return ColorPool.w_color;
+            default:
+                return Color.GRAY;
+        }
+    }
+
+
+    protected abstract String getTypeTag(String log);
+
+
 }

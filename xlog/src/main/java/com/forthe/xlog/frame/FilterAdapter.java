@@ -88,6 +88,16 @@ public abstract class FilterAdapter<T> extends BaseAdapter{
         }
         notifyDataSetChanged();
     }
+
+    public void addHeaderData(T t){
+        dataList.add(0, t);
+        if(!filter(t)){
+            filterList.add(0, t);
+        }
+        notifyDataSetChanged();
+    }
+
+
     
     public void addData(List<T> ts){
         dataList.addAll(ts);

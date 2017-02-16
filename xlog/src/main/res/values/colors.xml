@@ -7,5 +7,5 @@
     <color name="xlog_json_color">#07aa07</color>
     <color name="xlog_url_color">#3388cc</color>
     <color name="xlog_panel_bg_color">#252625</color>
-    <color name="xlog_list_bg_color">#fefefe</color>
+    <color name="xlog_list_bg_color">#efefef</color>
 </resources>

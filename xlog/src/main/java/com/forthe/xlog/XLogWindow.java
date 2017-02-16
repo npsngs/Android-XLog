@@ -142,12 +142,10 @@ class XLogWindow implements View.OnClickListener {
                         @Override
                         public void onAttach(Container container) {
                             super.onAttach(container);
-                            tv_title_center.setText("Log △");
                         }
                         @Override
                         public void onDetach(Container container) {
                             super.onDetach(container);
-                            tv_title_center.setText("Log ▽");
                         }
                     };
                 }
@@ -189,7 +187,7 @@ class XLogWindow implements View.OnClickListener {
                 break;
             case XLog.PAGE_LOGS:
                 tv_log_list.setSelected(true);
-                tv_title_left.setText("filter");
+                tv_title_left.setText("filter ▽");
                 tv_title_center.setText("Log ▽");
                 tv_title_right.setText("clear");
                 lv.setAdapter(logAdapter);

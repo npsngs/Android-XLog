@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.forthe.xlog.R;
 import com.forthe.xlog.core.Container;
@@ -21,8 +22,11 @@ public class HistoryPanel extends PanelBase {
     @Override
     protected View onCreateView(Context context, ViewGroup parent) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        listView = (ListView) inflater.inflate(R.layout.forthe_xlog_singlelist, parent, false);
-        return listView;
+        View root = inflater.inflate(R.layout.forthe_xlog_singlelist_title, parent, false);
+        listView = (ListView)root.findViewById(R.id.lv);
+        TextView tv_title_center = (TextView) root.findViewById(R.id.tv_title_center);
+        tv_title_center.setText("History");
+        return root;
     }
 
     @Override
