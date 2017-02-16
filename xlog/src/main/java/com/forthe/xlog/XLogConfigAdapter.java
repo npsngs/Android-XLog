@@ -1,10 +1,13 @@
 package com.forthe.xlog;
 
 import android.content.Context;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ListView;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import com.forthe.xlog.tools.XLogUtils;
 
@@ -30,9 +33,9 @@ class XLogConfigAdapter extends BaseAdapter {
     @Override
     public int getCount() {
         if(null == extraItems){
-            return items.length;
+            return items.length+1;
         }else{
-            return items.length + extraItems.size();
+            return items.length + extraItems.size()+1;
         }
     }
 
@@ -40,9 +43,21 @@ class XLogConfigAdapter extends BaseAdapter {
     public String getItem(int position) {
         if(position < items.length){
             return items[position];
-        }else{
+        }else if(position >= items.length && position < items.length + extraItems.size()){
             return extraItems.get(position - items.length);
+        }else{
+            return XLog.getExtraInfo(context);
         }
+    }
+
+    @Override
+    public int getViewTypeCount() {
+        return 2;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position == getCount()-1?1:0;
     }
 
     @Override
@@ -52,23 +67,46 @@ class XLogConfigAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View v = convertView;
-        Holder holder;
-        if(v == null){
-            Switch sw = new Switch(context);
-            sw.setBackgroundColor(0xffe3e3e3);
-            sw.setTextSize(15.0f);
-            sw.setTextColor(0xff333333);
-            sw.setPadding(padding,padding,padding,padding);
-            holder = new Holder(sw);
-            v = sw;
-            v.setTag(holder);
+        int type = getItemViewType(position);
+        if(type == 0){
+            View v = convertView;
+            Holder holder;
+            if(v == null){
+                Switch sw = new Switch(context);
+                sw.setBackgroundColor(0xffe3e3e3);
+                sw.setTextSize(15.0f);
+                sw.setTextColor(0xff333333);
+                sw.setPadding(padding,padding,padding,padding);
+                holder = new Holder(sw);
+                v = sw;
+                v.setTag(holder);
+            }else{
+                holder = (Holder) v.getTag();
+            }
+            holder.bindPosition(position);
+            return v;
         }else{
-            holder = (Holder) v.getTag();
+            TextView tv;
+            if(convertView == null){
+                tv = new TextView(context);
+                tv.setLayoutParams(new ListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT));
+                tv.setTextSize(14f);
+                tv.setTextIsSelectable(true);
+                tv.setGravity(Gravity.LEFT);
+                int padding = XLogUtils.dp2px(context, 10);
+                tv.setPadding(padding, padding, padding, padding);
+                tv.setTextColor(0xff787878);
+                tv.setSingleLine(false);
+            }else {
+                tv = (TextView) convertView;
+            }
+            tv.setText(getItem(position));
+            return tv;
         }
-        holder.bindPosition(position);
-        return v;
     }
+
+
 
     private class Holder implements View.OnClickListener {
         Switch sw;

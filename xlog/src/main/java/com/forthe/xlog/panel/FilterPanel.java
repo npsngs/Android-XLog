@@ -134,7 +134,7 @@ public class FilterPanel extends PanelBase implements AdapterView.OnItemClickLis
 
     private static Pattern findPattern;
     private static Map<String,Boolean> records;
-    private static CharSequence findRegex;
+    private static String findRegex;
 
     public void createFilters(){
         if(records == null){
@@ -294,7 +294,7 @@ public class FilterPanel extends PanelBase implements AdapterView.OnItemClickLis
                 findRegex = null;
                 findPattern = null;
             }else{
-                findRegex = s;
+                findRegex = s.toString();
                 try{
                     findPattern = Pattern.compile(String.format("%s",s));
                 }catch (Exception e){

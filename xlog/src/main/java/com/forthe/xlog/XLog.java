@@ -2,6 +2,7 @@ package com.forthe.xlog;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -217,5 +218,23 @@ public class XLog {
             return config.getSwitchItem(key);
         }
         return false;
+    }
+
+
+    private static String extraInfo;
+    public static String getExtraInfo(Context context) {
+        if(TextUtils.isEmpty(extraInfo)){
+            StringBuilder sb = new StringBuilder();
+            sb.append("------------------------------------\n");
+            sb.append("[Sdk]:\t").append(Build.VERSION.SDK_INT).append("\n");
+            sb.append("[Device]:\t").append(Build.DEVICE).append("\n");
+            sb.append("[Package]:\t").append(context.getApplicationInfo().packageName).append("\n");
+            sb.append("------------------------------------\n");
+            extraInfo = sb.toString();
+        }
+        return extraInfo;
+    }
+    public static void setExtraInfo(String extraInfo) {
+        XLog.extraInfo = extraInfo;
     }
 }
