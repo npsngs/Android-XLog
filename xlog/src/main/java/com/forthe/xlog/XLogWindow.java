@@ -96,6 +96,8 @@ class XLogWindow implements View.OnClickListener {
                 }
             }
         });
+
+        filterPanel = new FilterPanel(Panel.MODE_FRIENDLY,logAdapter);
     }
 
 
@@ -127,10 +129,6 @@ class XLogWindow implements View.OnClickListener {
             }
         } else if(R.id.tv_title_left == id) {
             if (currentPage == XLog.PAGE_LOGS) {
-                if (null == filterPanel) {
-                    filterPanel = new FilterPanel(Panel.MODE_FRIENDLY,logAdapter);
-                }
-
                 if (!filterPanel.isShow()) {
                     panelContainer.showPanel(filterPanel);
                 } else {

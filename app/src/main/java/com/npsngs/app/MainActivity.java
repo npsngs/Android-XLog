@@ -53,7 +53,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 XLog.i("test",".view.ViewPager.setCurrentItem(ViewPager.java:562)\n" +
                         "11-03 [{\"key\":\"xiaoming\"},{\"value\":\"hahayixiao\",\"name\":\"xxoo\"},{x}]18:27:43.042 14150-14150/com.yxd.live W/System.err:     at com.yxd.live.vu.modules.HomeBannerVu.autoRun(HomeBannerVu.java:172)\n" +
                         "11-03 18:27:43.042 14150-14150/com.yxd.live W/System.err:     at com.yxd.live.vu.modules.HomeBannerVu$1.run(HomeBannerVu.java:63)\n" +
-                        "11-03 18:27:43.042 14150-{x}141{{{{}50/com.yxd.{\"bb\":{\"s\":\"http://www.baidu.com\"},\"aa\":\"c\"}live W/System.err:     at android.os.http://www.sss.com?ss1=1223,Handler.handleCallback(Handler.java:739)\n" +
+                        "11-03 18:27:43.042 14150-{x}141{{{{}50/com.yxd.{\"bb\":{\"s\":\"http://www.baidu.com\"},\"aa\":\"c\"}live W/System.err:     at android.os.http://www.sss.com?ss1=1223,httpler.handleCallback(Handler.java:739)\n" +
                         "11-03 18:27http://h.hiphotos.baidu.com/zhidao/pic/item/6d81800a19d8bc3ed69473cb848ba61ea8d34516.jpg}:43.042 14150-14150/com.yxd.live W/System.err:     at android.os.Handler.dispatchMessage(Handler.java:95)\n" +
                         "11-03 18:27:43.042 14150-14150/com.yxd.live W/http://www.baidu.com System.err:     at android.os.Looper.loop(Looper.java:148)\n" +
                         "11-03 18:27:43.042 14150-14150/com.yxd.live{\"aa\":\"xx\"}W/System.err:     at android.app");

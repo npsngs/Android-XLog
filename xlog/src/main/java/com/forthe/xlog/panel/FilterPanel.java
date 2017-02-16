@@ -25,21 +25,24 @@ import com.forthe.xlog.frame.FilterAdapter;
 import com.forthe.xlog.frame.PanelBase;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 public class FilterPanel extends PanelBase implements AdapterView.OnItemClickListener{
     private FilterAdapter<String> filterAdapter;
     private List<MYFilter> filters;
+
     private MyAdapter adapter;
     public FilterPanel(int mode, FilterAdapter<String> filterAdapter) {
         super(mode);
         this.filterAdapter = filterAdapter;
+        createFilters();
     }
 
     @Override
     protected View onCreateView(Context context, ViewGroup parent) {
-        createFilters();
         context = parent.getContext();
         int w = XLogUtils.dp2px(context, 80);
         int h = RelativeLayout.LayoutParams.WRAP_CONTENT;
@@ -64,8 +67,9 @@ public class FilterPanel extends PanelBase implements AdapterView.OnItemClickLis
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         MYFilter filter = adapter.getItem(position);
-        if(filter.isUsed()){
-            filter.setUsed(false);
+        if(filter.isUsed){
+            filter.isUsed = false;
+            records.put(filter.title, false);
             filterAdapter.removeItemFilter(filter);
         }else{
             if(4 == position){
@@ -80,11 +84,13 @@ public class FilterPanel extends PanelBase implements AdapterView.OnItemClickLis
                         editPanel.compile();
                     }
                     editPanel.dismiss();
-                    filter.setUsed(true);
+                    filter.isUsed = true;
+                    records.put(filter.title, true);
                     filterAdapter.addItemFilter(filter);
                 }
             }else{
-                filter.setUsed(true);
+                filter.isUsed = true;
+                records.put(filter.title, true);
                 filterAdapter.addItemFilter(filter);
             }
         }
@@ -126,91 +132,103 @@ public class FilterPanel extends PanelBase implements AdapterView.OnItemClickLis
 
 
 
-    private Pattern findPattern;
-    private void createFilters(){
-        if(null != filters){
-            return;
+    private static Pattern findPattern;
+    private static Map<String,Boolean> records;
+    private static CharSequence findRegex;
+
+    public void createFilters(){
+        if(records == null){
+            records = new HashMap<>(5);
+            records.put("D",Boolean.FALSE);
+            records.put("I",Boolean.FALSE);
+            records.put("W",Boolean.FALSE);
+            records.put("E",Boolean.FALSE);
+            records.put("find",Boolean.FALSE);
         }
 
-        filters = new ArrayList<>();
-        filters.add(new MYFilter("D") {
-            @Override
-            public boolean filter(String item) {
-                if(TextUtils.isEmpty(item)){
-                    return false;
+        if(null == filters){
+            filters = new ArrayList<>();
+            filters.add(new MYFilter("D", records.get("D")) {
+                @Override
+                public boolean filter(String item) {
+                    if(TextUtils.isEmpty(item)){
+                        return false;
+                    }
+                    return item.startsWith("D");
                 }
-                return item.startsWith("D");
-            }
-        });
+            });
 
-        filters.add(new MYFilter("I") {
-            @Override
-            public boolean filter(String item) {
-                if(TextUtils.isEmpty(item)){
-                    return false;
+            filters.add(new MYFilter("I",records.get("I")) {
+                @Override
+                public boolean filter(String item) {
+                    if(TextUtils.isEmpty(item)){
+                        return false;
+                    }
+                    return item.startsWith("I");
                 }
-                return item.startsWith("I");
-            }
-        });
+            });
 
-        filters.add(new MYFilter("W") {
-            @Override
-            public boolean filter(String item) {
-                if(TextUtils.isEmpty(item)){
-                    return false;
+            filters.add(new MYFilter("W", records.get("W")) {
+                @Override
+                public boolean filter(String item) {
+                    if(TextUtils.isEmpty(item)){
+                        return false;
+                    }
+                    return item.startsWith("W");
                 }
-                return item.startsWith("W");
-            }
-        });
+            });
 
-        filters.add(new MYFilter("E") {
-            @Override
-            public boolean filter(String item) {
-                if(TextUtils.isEmpty(item)){
-                    return false;
+            filters.add(new MYFilter("E",records.get("E")) {
+                @Override
+                public boolean filter(String item) {
+                    if(TextUtils.isEmpty(item)){
+                        return false;
+                    }
+                    return item.startsWith("E");
                 }
-                return item.startsWith("E");
-            }
-        });
+            });
 
-        filters.add(new MYFilter("find") {
-            @Override
-            public boolean filter(String item) {
-                if(TextUtils.isEmpty(item)){
+            filters.add(new MYFilter("find",records.get("find")) {
+                @Override
+                public boolean filter(String item) {
+                    if(TextUtils.isEmpty(item)){
+                        return true;
+                    }
+
+                    if(findPattern == null || findPattern.matcher(item).find()){
+                        return false;
+                    }
+
                     return true;
                 }
+            });
+        }
 
-                if(findPattern == null || findPattern.matcher(item).find()){
-                    return false;
-                }
 
-                return true;
+
+        for(MYFilter filter:filters){
+            if(filter.isUsed){
+                filterAdapter.addItemFilter(filter);
             }
-        });
+        }
     }
 
 
     static abstract class MYFilter implements ItemFilter<String> {
         private String title;
-        private boolean isUsed =false;
-        MYFilter(String title) {
+        private boolean isUsed = false;
+        MYFilter(String title, boolean isUsed) {
             this.title = title;
-        }
-        boolean isUsed() {
-            return isUsed;
-        }
-
-        void setUsed(boolean used) {
-            isUsed = used;
+            this.isUsed = isUsed;
         }
     }
 
 
 
-    private CharSequence findRegex;
-    class EditPanel extends PanelBase implements TextView.OnEditorActionListener, TextWatcher{
+
+    private class EditPanel extends PanelBase implements TextView.OnEditorActionListener, TextWatcher{
         private EditText editText;
-        public EditPanel(int mode) {
+        EditPanel(int mode) {
             super(mode);
         }
 
@@ -234,6 +252,10 @@ public class FilterPanel extends PanelBase implements AdapterView.OnItemClickLis
             editText.setTextColor(0xffffffff);
             editText.setHintTextColor(0xffa3a3a3);
             editText.setHint("regex expression");
+            if(!TextUtils.isEmpty(findRegex)){
+                editText.setText(findRegex);
+            }
+
             editText.setBackgroundResource(R.drawable.sp_forthe_xlog_filters_bg);
             editText.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
             editText.setSingleLine(true);
@@ -252,10 +274,11 @@ public class FilterPanel extends PanelBase implements AdapterView.OnItemClickLis
                 compile();
 
                 MYFilter filter = adapter.getItem(4);
-                if(filter.isUsed()){
+                if(filter.isUsed){
                     filterAdapter.onFilterChange();
                 }else{
-                    filter.setUsed(true);
+                    filter.isUsed = true;
+                    records.put(filter.title, true);
                     filterAdapter.addItemFilter(filter);
                 }
                 adapter.notifyDataSetInvalidated();
@@ -265,7 +288,7 @@ public class FilterPanel extends PanelBase implements AdapterView.OnItemClickLis
             return false;
         }
 
-        public void compile(){
+        void compile(){
             CharSequence s = editText.getText();
             if(TextUtils.isEmpty(s)){
                 findRegex = null;

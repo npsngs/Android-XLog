@@ -8,7 +8,8 @@ import java.util.regex.Pattern;
 public class URLParser implements LogParser {
     private Pattern pattern;
     public URLParser() {
-        pattern = Pattern.compile("http://[^\\s\\]\\])},'\"]+");
+        //((?!abc).)*  的意思就是匹配  不含abc的字符(?!abc) 跟 任意字符. 的组合，出现任何次*
+        pattern = Pattern.compile("http://((?!,http|\\s|\\]|\\)|\\}|'|\").)+");
     }
 
     @Override
