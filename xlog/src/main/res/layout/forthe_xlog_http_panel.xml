@@ -124,7 +124,7 @@
 
     <ListView
         android:dividerHeight="0.5dp"
-        android:divider="#c3c3c3"
+        android:divider="#aeaeae"
         android:visibility="gone"
         android:scrollbars="none"
         android:id="@+id/lv_method"
@@ -139,7 +139,7 @@
     <ListView
         android:visibility="gone"
         android:dividerHeight="0.5dp"
-        android:divider="#c3c3c3"
+        android:divider="#aeaeae"
         android:scrollbars="none"
         android:id="@+id/lv_accept"
         android:layout_marginTop="5dp"
@@ -153,7 +153,7 @@
     <ListView
         android:visibility="gone"
         android:dividerHeight="0.5dp"
-        android:divider="#c3c3c3"
+        android:divider="#aeaeae"
         android:scrollbars="none"
         android:id="@+id/lv_content"
         android:layout_marginTop="5dp"

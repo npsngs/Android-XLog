@@ -23,10 +23,18 @@ class XLogStore implements LogStore{
         setNeedSaveToFile(isNeedSaveToFile);
     }
 
+    private void checkDir(String dir){
+        File file = new File(dir);
+        if(!file.exists() || !file.isDirectory()){
+            file.mkdirs();
+        }
+    }
+
     private void checkFile(){
         if(saveFile != null || TextUtils.isEmpty(saveDir)){
             return;
         }
+        checkDir(saveDir);
 
         String date = String.valueOf(DateFormat.format("yyyy-MM-dd", System.currentTimeMillis()));
         saveFile = new File(saveDir, String.format("log_%s.txt",date));

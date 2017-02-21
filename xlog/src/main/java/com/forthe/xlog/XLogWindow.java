@@ -188,7 +188,7 @@ class XLogWindow implements View.OnClickListener {
             case XLog.PAGE_LOGS:
                 tv_log_list.setSelected(true);
                 tv_title_left.setText("filter ▽");
-                tv_title_center.setText("Log ▽");
+                tv_title_center.setText("Log ▷");
                 tv_title_right.setText("clear");
                 lv.setAdapter(logAdapter);
                 lv.setSelection(logAdapter.getCount());

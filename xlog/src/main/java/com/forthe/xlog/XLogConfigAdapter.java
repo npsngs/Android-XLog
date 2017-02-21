@@ -23,7 +23,7 @@ class XLogConfigAdapter extends BaseAdapter {
     XLogConfigAdapter(Context context) {
         this.context = context;
         items = new String[]{
-            "调试","信息", "警告","错误","保存","Logcat"
+            "Debug","Info", "Warn","Error","Save","Logcat"
         };
         extraItems = XLog.getExtraItems();
         padding = XLogUtils.dp2px(context, 12f);

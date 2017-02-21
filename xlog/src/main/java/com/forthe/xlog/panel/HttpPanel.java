@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.Set;
 
 
-public class HttpPanel extends PanelBase implements View.OnClickListener{
+class HttpPanel extends PanelBase implements View.OnClickListener{
     private String url;
     private ListView lv_method, lv_accept, lv_content, lv_parameter;
     private EditText et_host;
@@ -46,7 +46,7 @@ public class HttpPanel extends PanelBase implements View.OnClickListener{
     private String method = "GET";
     private String accept = "*/*";
     private String content_type = "application/x-www-form-urlencoded";
-    public HttpPanel(String url) {
+    HttpPanel(String url) {
         this.url = url;
     }
 
@@ -128,18 +128,24 @@ public class HttpPanel extends PanelBase implements View.OnClickListener{
                 lv_method.setVisibility(View.GONE);
             } else {
                 lv_method.setVisibility(View.VISIBLE);
+                lv_accept.setVisibility(View.GONE);
+                lv_content.setVisibility(View.GONE);
             }
         }else if(R.id.tv_accept == id){
             if (lv_accept.getVisibility() == View.VISIBLE) {
                 lv_accept.setVisibility(View.GONE);
             } else {
                 lv_accept.setVisibility(View.VISIBLE);
+                lv_method.setVisibility(View.GONE);
+                lv_content.setVisibility(View.GONE);
             }
         }else if(R.id.tv_content_type == id){
             if (lv_content.getVisibility() == View.VISIBLE) {
                 lv_content.setVisibility(View.GONE);
             } else {
                 lv_content.setVisibility(View.VISIBLE);
+                lv_method.setVisibility(View.GONE);
+                lv_accept.setVisibility(View.GONE);
             }
         }else if(R.id.tv_view_url == id){
             String realUrl = host_url;
@@ -162,7 +168,7 @@ public class HttpPanel extends PanelBase implements View.OnClickListener{
 
 
     private class ParameterAdapter extends Adapter<KeyValuePair>{
-        public ParameterAdapter(Context mContext) {
+        private ParameterAdapter(Context mContext) {
             super(mContext);
         }
 
@@ -222,7 +228,7 @@ public class HttpPanel extends PanelBase implements View.OnClickListener{
         private class ParameterHolder {
             private int position;
             private EditText et_key, et_value;
-            public ParameterHolder(View v){
+            private ParameterHolder(View v){
                 et_key = (EditText) v.findViewById(R.id.et_key);
                 et_value = (EditText) v.findViewById(R.id.et_value);
                 et_key.addTextChangedListener(new MyTextWatcher(){
@@ -279,7 +285,7 @@ public class HttpPanel extends PanelBase implements View.OnClickListener{
 
             }
 
-            public void bind(int position){
+            private void bind(int position){
                 this.position = position;
                 KeyValuePair valuePair = getItem(position);
                 et_key.setText(valuePair.key);
@@ -302,19 +308,19 @@ public class HttpPanel extends PanelBase implements View.OnClickListener{
         String key;
         String value;
 
-        public KeyValuePair(String key, String value) {
+        private KeyValuePair(String key, String value) {
             this.key = key;
             this.value = value;
         }
 
-        public boolean isValid(){
+        private boolean isValid(){
             return !TextUtils.isEmpty(key) && value !=null;
         }
     }
 
 
     private class MethodAdapter extends OptionAdapter{
-        public MethodAdapter(Context mContext) {
+        private MethodAdapter(Context mContext) {
             super(mContext);
         }
 
@@ -327,7 +333,7 @@ public class HttpPanel extends PanelBase implements View.OnClickListener{
                 public void run() {
                     lv_method.setVisibility(View.GONE);
                 }
-            },600);
+            },300);
             if("GET".equals(method)){
                 content_type = "application/x-www-form-urlencoded";
             }
@@ -344,7 +350,7 @@ public class HttpPanel extends PanelBase implements View.OnClickListener{
 
 
     private class AcceptAdapter extends OptionAdapter{
-        public AcceptAdapter(Context mContext) {
+        private AcceptAdapter(Context mContext) {
             super(mContext);
         }
 
@@ -357,7 +363,7 @@ public class HttpPanel extends PanelBase implements View.OnClickListener{
                 public void run() {
                     lv_accept.setVisibility(View.GONE);
                 }
-            },600);
+            },300);
         }
 
         @Override
@@ -368,7 +374,7 @@ public class HttpPanel extends PanelBase implements View.OnClickListener{
 
 
     private class ContentTypeAdapter extends OptionAdapter{
-        public ContentTypeAdapter(Context mContext) {
+        private ContentTypeAdapter(Context mContext) {
             super(mContext);
         }
 
@@ -381,7 +387,7 @@ public class HttpPanel extends PanelBase implements View.OnClickListener{
                 public void run() {
                     lv_content.setVisibility(View.GONE);
                 }
-            },600);
+            },300);
         }
 
         @Override
@@ -393,7 +399,7 @@ public class HttpPanel extends PanelBase implements View.OnClickListener{
 
     private abstract class OptionAdapter extends Adapter<String>{
         int padding;
-        public OptionAdapter(Context mContext) {
+        private OptionAdapter(Context mContext) {
             super(mContext);
             padding = XLogUtils.dp2px(mContext, 10);
         }
@@ -421,7 +427,7 @@ public class HttpPanel extends PanelBase implements View.OnClickListener{
             tv.setTag(position);
             String s = getItem(position);
             tv.setText(s);
-            tv.setTextColor(s.equals(getSelectedItem(position))?0xff26b9f7:0xffa0a0a0);
+            tv.setTextColor(s.equals(getSelectedItem(position))?0xFF28C12A:0xff878787);
             return tv;
         }
     }

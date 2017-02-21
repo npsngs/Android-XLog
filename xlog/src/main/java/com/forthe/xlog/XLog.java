@@ -8,9 +8,17 @@ import android.util.Log;
 
 import com.forthe.xlog.core.LogNotifier;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * ▷ ▽ △ ◁ ♂ ♀
+ */
 public class XLog {
     private static String logSaveDir;
     private static String crashSaveDir;
@@ -92,7 +100,7 @@ public class XLog {
     }
 
     public static void d(String tag, String log){
-        if(config.isDebugON()){
+        if(config.isDebugON() && !TextUtils.isEmpty(log)){
             addLog("D",tag,log);
             if(config.isLogcatON()){
                 Log.d(tag,log);
@@ -105,7 +113,7 @@ public class XLog {
     }
 
     public static void i(String tag, String log){
-        if(config.isDebugON()){
+        if(config.isDebugON() && !TextUtils.isEmpty(log)){
             addLog("I",tag,log);
             if(config.isLogcatON()){
                 Log.d(tag,log);
@@ -113,13 +121,26 @@ public class XLog {
         }
     }
 
+    public static void e(Throwable t){
+        StringWriter sw = new StringWriter();
+        t.printStackTrace(new PrintWriter(sw));
+        String log = sw.toString();
+        e(log);
+    }
+
+    public static void w(Throwable t){
+        StringWriter sw = new StringWriter();
+        t.printStackTrace(new PrintWriter(sw));
+        String log = sw.toString();
+        w(log);
+    }
 
     public static void w(String log){
         w("", log);
     }
 
     public static void w(String tag, String log){
-        if(config.isWarnON()){
+        if(config.isWarnON() && !TextUtils.isEmpty(log)){
             addLog("W",tag,log);
             if(config.isLogcatON()){
                 Log.w(tag,log);
@@ -132,7 +153,7 @@ public class XLog {
     }
 
     public static void e(String tag, String log){
-        if(config.isErrorON()){
+        if(config.isErrorON() && !TextUtils.isEmpty(log)){
             addLog("E",tag,log);
             if(config.isLogcatON()){
                 Log.e(tag,log);
@@ -143,7 +164,7 @@ public class XLog {
 
     private static void addLog(String lvl, String tag, String msg){
         String log;
-        if(TextUtils.isEmpty(tag)){
+        if(!TextUtils.isEmpty(tag)){
             log = String.format("%s\t%s\t%s", lvl,tag,msg);
         }else{
             log = String.format("%s\t%s", lvl,msg);
@@ -162,7 +183,10 @@ public class XLog {
     }
 
     static List<String> getLogs() {
-        return logStore.getLogs();
+        List<String> logs = logStore.getLogs();
+        List<String> ret = new ArrayList<>(logs.size());
+        ret.addAll(logs);
+        return ret;
     }
 
     static void setLogNotifier(LogNotifier logNotifier) {

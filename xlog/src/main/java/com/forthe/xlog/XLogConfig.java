@@ -114,6 +114,9 @@ abstract class XLogConfig {
 
     private List<String> extraItems;
     List<String> getExtraItems() {
+        if(extraItems == null){
+            extraItems = new ArrayList<>();
+        }
         return extraItems;
     }
 

@@ -35,7 +35,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
     }
 
     private String getSaveDir(){
-        return Environment.getExternalStorageDirectory().getAbsolutePath()+"/NDebug";
+        return Environment.getExternalStorageDirectory().getAbsolutePath()+"/XLog";
     }
 
     @Override
@@ -68,7 +68,12 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 }
                 break;
             case R.id.btn_crash1:
-                int a = 0/0;
+                try{
+                    int a = 0/0;
+                }catch (Throwable t){
+                    XLog.w(t);
+                    XLog.e(t);
+                }
                 break;
             case R.id.btn_crash2:
                 throw new IllegalAccessError("Test Crash2");
