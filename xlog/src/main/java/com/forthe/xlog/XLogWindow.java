@@ -2,6 +2,7 @@ package com.forthe.xlog;
 
 import android.app.Activity;
 import android.graphics.drawable.ColorDrawable;
+import android.text.Html;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,10 +13,13 @@ import android.widget.TextView;
 import com.forthe.xlog.core.Container;
 import com.forthe.xlog.core.Panel;
 import com.forthe.xlog.frame.ColorPool;
+import com.forthe.xlog.panel.filters.FilterContainer;
 import com.forthe.xlog.frame.PanelContainer;
-import com.forthe.xlog.panel.FilterPanel;
 import com.forthe.xlog.panel.HistoryPanel;
+import com.forthe.xlog.panel.filters.LogFilterPanel;
 import com.forthe.xlog.tools.TouchListView;
+
+import java.util.regex.Pattern;
 
 class XLogWindow implements View.OnClickListener {
     private Activity activity;
@@ -27,7 +31,7 @@ class XLogWindow implements View.OnClickListener {
     private XLogAdapter logAdapter;
     private XLogCrashAdapter crashAdapter;
     private PanelContainer panelContainer;
-
+    private FilterContainer filterContainer;
     XLogWindow(Activity activity) {
         this.activity = activity;
         ColorPool.init(activity);
@@ -64,11 +68,46 @@ class XLogWindow implements View.OnClickListener {
     }
 
     private void initView(View root){
+        filterContainer = new FilterContainer();
+        filterContainer.initFromSp(activity);
+        filterContainer.setOnFilterChange(new FilterContainer.OnFilterChange() {
+            @Override
+            public void onFilterChange() {
+                if(currentPage == XLog.PAGE_LOGS){
+                    if(filterContainer.hasAnyFilterON()){
+                        tv_title_left.setText(Html.fromHtml("<font color='#00FF00'>filter ▽</font>"));
+                    }else{
+                        tv_title_left.setText("filter ▽");
+                    }
+                }
+            }
+        });
+
         RelativeLayout rl_panel_container = (RelativeLayout) root.findViewById(R.id.rl_panel_container);
         panelContainer = new PanelContainer(rl_panel_container);
 
         configAdapter = new XLogConfigAdapter(activity.getApplication());
         logAdapter = new XLogAdapter(activity.getApplication(), panelContainer);
+        FilterContainer.FilterItem[] items = filterContainer.getItems();
+        for(FilterContainer.FilterItem item:items){
+            if(item.isON()){
+                if(item.isTagFilter()){
+                    logAdapter.addFilterTag(item.getTitle());
+                }else{
+                    try {
+                        String regex = String.format("%s%s",filterContainer.isIgnoreCase()?"(?i)":"(?-i)",filterContainer.getPattern());
+                        Pattern pattern = Pattern.compile(regex);
+                        logAdapter.setFilterPattern(pattern);
+                    }catch (Exception e){
+                        filterContainer.setPattern(null);
+                        filterContainer.switchItem(item.getTitle());
+                        XLog.e(e);
+                    }
+                }
+            }
+        }
+
+
         crashAdapter = new XLogCrashAdapter(activity.getApplication(), panelContainer);
 
         lv = (TouchListView) root.findViewById(R.id.lv);
@@ -97,7 +136,7 @@ class XLogWindow implements View.OnClickListener {
             }
         });
 
-        filterPanel = new FilterPanel(Panel.MODE_FRIENDLY,logAdapter);
+
     }
 
 
@@ -115,7 +154,7 @@ class XLogWindow implements View.OnClickListener {
         }
     }
 
-    private FilterPanel filterPanel;
+    private LogFilterPanel filterPanel;
     private HistoryPanel historyPanel;
     @Override
     public void onClick(View v) {
@@ -129,6 +168,10 @@ class XLogWindow implements View.OnClickListener {
             }
         } else if(R.id.tv_title_left == id) {
             if (currentPage == XLog.PAGE_LOGS) {
+                if(null == filterPanel){
+                    filterPanel = new LogFilterPanel(Panel.MODE_FRIENDLY, filterContainer, logAdapter);
+                }
+
                 if (!filterPanel.isShow()) {
                     panelContainer.showPanel(filterPanel);
                 } else {
@@ -187,7 +230,11 @@ class XLogWindow implements View.OnClickListener {
                 break;
             case XLog.PAGE_LOGS:
                 tv_log_list.setSelected(true);
-                tv_title_left.setText("filter ▽");
+                if(filterContainer.hasAnyFilterON()){
+                    tv_title_left.setText(Html.fromHtml("<font color='#00FF00'>filter ▽</font>"));
+                }else{
+                    tv_title_left.setText("filter ▽");
+                }
                 tv_title_center.setText("Log ▷");
                 tv_title_right.setText("clear");
                 lv.setAdapter(logAdapter);

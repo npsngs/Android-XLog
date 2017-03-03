@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:singleLine="true"
+        android:padding="12dp"
+        android:background="@drawable/sp_forthe_xlog_filters_bg"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:hint="regex expression"
+        android:imeOptions="actionSearch"
+        android:textSize="14sp"
+        android:textColor="#ffffff"
+        android:textColorHint="#a3a3a3"
+        android:id="@+id/et" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/sp_forthe_xlog_piece_bg"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+        <CheckBox
+            android:textSize="15sp"
+            android:textColor="#d2d2d2"
+            android:text="Ignore Case"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/cb_ignore_case"/>
+        <android.support.v7.widget.RecyclerView
+            android:visibility="gone"
+            android:id="@+id/rcv_history"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+</LinearLayout>

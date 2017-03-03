@@ -11,8 +11,10 @@ import com.forthe.xlog.R;
 import com.forthe.xlog.core.Container;
 import com.forthe.xlog.core.LogNotifier;
 import com.forthe.xlog.core.Panel;
+import com.forthe.xlog.panel.filters.FilterContainer;
 import com.forthe.xlog.frame.PanelBase;
 import com.forthe.xlog.frame.XLogNotifier;
+import com.forthe.xlog.panel.filters.LogFilterPanel;
 import com.forthe.xlog.tools.TouchListView;
 import com.forthe.xlog.view.LogAdapter;
 
@@ -24,8 +26,9 @@ import java.io.InputStreamReader;
 
 class LocalLogPanel extends PanelBase {
     private String filePath;
-    private HistoryFilterPanel filterPanel;
+    private LogFilterPanel filterPanel;
     private LocalLogAdapter adapter;
+    private FilterContainer filterContainer;
     LocalLogPanel(String filePath) {
         this.filePath = filePath;
     }
@@ -47,7 +50,7 @@ class LocalLogPanel extends PanelBase {
         adapter = new LocalLogAdapter(context);
         listView.setAdapter(adapter);
 
-
+        filterContainer = new FilterContainer();
         TextView tv_title_center = (TextView) root.findViewById(R.id.tv_title_center);
         tv_title_center.setText(parseFileName(filePath));
         TextView tv_title_left = (TextView) root.findViewById(R.id.tv_title_left);
@@ -56,7 +59,7 @@ class LocalLogPanel extends PanelBase {
             @Override
             public void onClick(View v) {
                 if(null == filterPanel){
-                    filterPanel = new HistoryFilterPanel(Panel.MODE_FRIENDLY, adapter);
+                    filterPanel = new LogFilterPanel(Panel.MODE_FRIENDLY, filterContainer, adapter);
                 }
                 if (!filterPanel.isShow()) {
                     showPanel(filterPanel);
@@ -78,6 +81,11 @@ class LocalLogPanel extends PanelBase {
 
     private class LocalLogAdapter extends LogAdapter{
         private LogNotifier notifier;
+
+        @Override
+        protected boolean onFilterTag(String tag, String item) {
+            return tag.equals(item.substring(11,12));
+        }
 
         private LocalLogAdapter(Context mContext) {
             super(mContext);

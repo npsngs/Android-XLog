@@ -25,6 +25,11 @@ class XLogAdapter extends LogAdapter{
     }
 
     @Override
+    protected boolean onFilterTag(String tag, String item) {
+        return item.startsWith(tag);
+    }
+
+    @Override
     protected String getTypeTag(String log) {
         if(TextUtils.isEmpty(log)){
             return "";

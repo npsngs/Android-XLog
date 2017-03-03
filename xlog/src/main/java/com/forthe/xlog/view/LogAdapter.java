@@ -13,14 +13,63 @@ import com.forthe.xlog.core.Container;
 import com.forthe.xlog.frame.ColorPool;
 import com.forthe.xlog.frame.FilterAdapter;
 import com.forthe.xlog.panel.TextPanel;
+import com.forthe.xlog.panel.filters.PatternFilter;
+import com.forthe.xlog.panel.filters.TagFilter;
 import com.forthe.xlog.tools.XLogUtils;
+
+import java.util.regex.Pattern;
 
 
 public abstract class LogAdapter extends FilterAdapter<String>{
     protected Container container;
+    private TagFilter tagFilter;
+    private PatternFilter patternFilter;
     public LogAdapter(Context mContext, Container container) {
         super(mContext);
         this.container = container;
+    }
+
+    protected abstract boolean onFilterTag(String tag, String item);
+    public void addFilterTag(String tag){
+        if(tagFilter == null){
+            tagFilter = new TagFilter() {
+                @Override
+                protected boolean onFilter(String tag, String item) {
+                    return onFilterTag(tag, item);
+                }
+            };
+            tagFilter.addTag(tag);
+            addItemFilter(tagFilter);
+        }else{
+            tagFilter.addTag(tag);
+            onFilterChange();
+        }
+    }
+
+    public void removeFilterTag(String tag){
+        if(tagFilter != null){
+            tagFilter.removeTag(tag);
+            onFilterChange();
+        }
+    }
+
+    public void setFilterPattern(Pattern pattern){
+        if(patternFilter == null){
+            patternFilter = new PatternFilter();
+            patternFilter.setFindPattern(pattern);
+            addItemFilter(patternFilter);
+        }else{
+            patternFilter.setFindPattern(pattern);
+            onFilterChange();
+        }
+    }
+
+    public void removeFilterPattern(){
+        if(patternFilter != null){
+            patternFilter.setFindPattern(null);
+            removeItemFilter(patternFilter);
+            patternFilter = null;
+        }
     }
 
     public LogAdapter(Context mContext) {

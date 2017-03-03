@@ -1,6 +1,7 @@
 package com.forthe.xlog.frame;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,16 +16,22 @@ public class PanelContainer implements Container {
     private Stack<Panel> panelStack;
     private ViewGroup container;
     private Context context;
+    private Rect outRect;
     public PanelContainer(ViewGroup container) {
         this.container = container;
         this.context = container.getContext();
+        outRect = new Rect();
         container.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if(null != panelStack && !panelStack.isEmpty()){
-                   Panel panel = panelStack.peek();
-                    if(panel.getMode() == Panel.MODE_FRIENDLY){
-                        return false;
+                    Panel panel = panelStack.peek();
+                    if(panel.getStatus() == Panel.STATUS_RESUME){
+                        View content = panel.getView(PanelContainer.this);
+                        content.getHitRect(outRect);
+                        int x = (int) event.getX();
+                        int y = (int) event.getY();
+                        return outRect.contains(x, y);
                     }
                 }
                 return true;
