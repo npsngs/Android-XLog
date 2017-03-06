@@ -34,7 +34,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
         XLog.addSwitchItem("isTest");
         XLog.i("start main");
         int[][] a = new int[][]{{1, 2}, {3, 4}, {5, 6}};
-        XLog.d(a.getClass().getName());
+        XLog.d(a.getClass().getCanonicalName());
     }
 
     private String getSaveDir(){
