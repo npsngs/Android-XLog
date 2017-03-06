@@ -75,7 +75,7 @@ class XLogWindow implements View.OnClickListener {
             public void onFilterChange() {
                 if(currentPage == XLog.PAGE_LOGS){
                     if(filterContainer.hasAnyFilterON()){
-                        tv_title_left.setText(Html.fromHtml("<font color='#00FF00'>filter ▽</font>"));
+                        tv_title_left.setText(Html.fromHtml("<font color='#01b7ff'>filter ▽</font>"));
                     }else{
                         tv_title_left.setText("filter ▽");
                     }
@@ -231,7 +231,7 @@ class XLogWindow implements View.OnClickListener {
             case XLog.PAGE_LOGS:
                 tv_log_list.setSelected(true);
                 if(filterContainer.hasAnyFilterON()){
-                    tv_title_left.setText(Html.fromHtml("<font color='#00FF00'>filter ▽</font>"));
+                    tv_title_left.setText(Html.fromHtml("<font color='#01b7ff'>filter ▽</font>"));
                 }else{
                     tv_title_left.setText("filter ▽");
                 }

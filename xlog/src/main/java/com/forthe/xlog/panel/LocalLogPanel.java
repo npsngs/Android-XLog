@@ -1,6 +1,7 @@
 package com.forthe.xlog.panel;
 
 import android.content.Context;
+import android.text.Html;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +30,7 @@ class LocalLogPanel extends PanelBase {
     private LogFilterPanel filterPanel;
     private LocalLogAdapter adapter;
     private FilterContainer filterContainer;
+    private TextView tv_title_left;
     LocalLogPanel(String filePath) {
         this.filePath = filePath;
     }
@@ -51,9 +53,10 @@ class LocalLogPanel extends PanelBase {
         listView.setAdapter(adapter);
 
         filterContainer = new FilterContainer();
+
         TextView tv_title_center = (TextView) root.findViewById(R.id.tv_title_center);
         tv_title_center.setText(parseFileName(filePath));
-        TextView tv_title_left = (TextView) root.findViewById(R.id.tv_title_left);
+        tv_title_left = (TextView) root.findViewById(R.id.tv_title_left);
         tv_title_left.setText("filter ▽");
         tv_title_left.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,6 +68,17 @@ class LocalLogPanel extends PanelBase {
                     showPanel(filterPanel);
                 } else {
                     filterPanel.dismiss();
+                }
+            }
+        });
+
+        filterContainer.setOnFilterChange(new FilterContainer.OnFilterChange() {
+            @Override
+            public void onFilterChange() {
+                if(filterContainer.hasAnyFilterON()){
+                    tv_title_left.setText(Html.fromHtml("<font color='#01b7ff'>filter ▽</font>"));
+                }else{
+                    tv_title_left.setText("filter ▽");
                 }
             }
         });

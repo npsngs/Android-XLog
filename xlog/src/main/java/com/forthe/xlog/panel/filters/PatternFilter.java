@@ -18,6 +18,6 @@ public class PatternFilter implements ItemFilter<String> {
         if(TextUtils.isEmpty(item)){
             return true;
         }
-        return !(findPattern == null || findPattern.matcher(item).find());
+        return findPattern == null || findPattern.matcher(item).find();
     }
 }

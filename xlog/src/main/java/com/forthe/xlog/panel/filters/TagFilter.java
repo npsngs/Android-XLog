@@ -38,8 +38,9 @@ public abstract class TagFilter implements ItemFilter<String> {
     @Override
     public boolean filter(String item) {
         if(tags.isEmpty()){
-            return false;
+            return true;
         }
+
         for(String tag:tags){
             if(TextUtils.isEmpty(item)){
                 continue;

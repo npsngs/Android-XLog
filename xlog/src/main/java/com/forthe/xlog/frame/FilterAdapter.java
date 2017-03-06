@@ -25,10 +25,10 @@ public abstract class FilterAdapter<T> extends BaseAdapter{
     private boolean filter(T t){
         if(!itemFilters.isEmpty()){
             for(ItemFilter filter:itemFilters){
-                if(filter.filter(t)) return true;
+                if(!filter.filter(t)) return false;
             }
         }
-        return false;
+        return true;
     }
 
     public void setData(List<T> data){
@@ -36,7 +36,7 @@ public abstract class FilterAdapter<T> extends BaseAdapter{
         if(null != data){
             for(T t:data){
                 dataList.add(t);
-                if(!filter(t)){
+                if(filter(t)){
                     filterList.add(t);
                 }
             }
@@ -83,7 +83,7 @@ public abstract class FilterAdapter<T> extends BaseAdapter{
 
     public void addData(T t){
         dataList.add(t);
-        if(!filter(t)){
+        if(filter(t)){
             filterList.add(t);
         }
         notifyDataSetChanged();
@@ -91,7 +91,7 @@ public abstract class FilterAdapter<T> extends BaseAdapter{
 
     public void addHeaderData(T t){
         dataList.add(0, t);
-        if(!filter(t)){
+        if(filter(t)){
             filterList.add(0, t);
         }
         notifyDataSetChanged();
@@ -102,7 +102,7 @@ public abstract class FilterAdapter<T> extends BaseAdapter{
     public void addData(List<T> ts){
         dataList.addAll(ts);
         for(T t:ts){
-            if(!filter(t))
+            if(filter(t))
                 filterList.add(t);
         }
         notifyDataSetChanged();
@@ -140,7 +140,7 @@ public abstract class FilterAdapter<T> extends BaseAdapter{
         filterList.clear();
         if(!dataList.isEmpty()){
             for(T t:dataList){
-                if(!filter(t))
+                if(filter(t))
                     filterList.add(t);
             }
         }
@@ -151,7 +151,7 @@ public abstract class FilterAdapter<T> extends BaseAdapter{
         filterList.clear();
         if(!dataList.isEmpty()){
             for(T t:dataList){
-                if(!filter(t))
+                if(filter(t))
                     filterList.add(t);
             }
         }
@@ -174,7 +174,7 @@ public abstract class FilterAdapter<T> extends BaseAdapter{
         filterList.clear();
         if(!dataList.isEmpty()){
             for(T t:dataList){
-                if(!filter(t))
+                if(filter(t))
                     filterList.add(t);
             }
         }

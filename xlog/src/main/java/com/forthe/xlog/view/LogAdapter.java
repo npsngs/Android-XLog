@@ -41,15 +41,15 @@ public abstract class LogAdapter extends FilterAdapter<String>{
             tagFilter.addTag(tag);
             addItemFilter(tagFilter);
         }else{
-            tagFilter.addTag(tag);
-            onFilterChange();
+            if(tagFilter.addTag(tag))
+                onFilterChange();
         }
     }
 
     public void removeFilterTag(String tag){
         if(tagFilter != null){
-            tagFilter.removeTag(tag);
-            onFilterChange();
+            if(tagFilter.removeTag(tag))
+                onFilterChange();
         }
     }
 

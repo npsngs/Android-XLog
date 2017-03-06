@@ -58,12 +58,12 @@ public class LogFilterPanel extends PanelBase implements AdapterView.OnItemClick
         FilterContainer.FilterItem item = adapter.getItem(position);
         String title = item.getTitle();
         if(item.isTagFilter()){
-            filterContainer.switchItem(title);
             if(item.isON()){
                 logAdapter.removeFilterTag(title);
             }else{
                 logAdapter.addFilterTag(item.getTitle());
             }
+            filterContainer.switchItem(title);
         } else {
             if(item.isON()){
                 filterContainer.switchItem(title);
