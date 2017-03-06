@@ -8,11 +8,10 @@ import android.util.Log;
 
 import com.forthe.xlog.core.LogNotifier;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +22,7 @@ public class XLog {
     private static String logSaveDir;
     private static String crashSaveDir;
     private static XLogReceiver logReceiver;
-    private static LogNotifier logNotifier;
+    private static WeakReference<LogNotifier> wrNotifier;
     private static XLogStore logStore;
     private static XLogConfig config;
     private static boolean hasInit = false;
@@ -73,8 +72,11 @@ public class XLog {
             @Override
             protected void onReceiveLog(String log) {
                 logStore.storeLog(log);
-                if(null != logNotifier){
-                    logNotifier.onLogAdd(log);
+                if(wrNotifier != null){
+                    LogNotifier logNotifier = wrNotifier.get();
+                    if(logNotifier != null){
+                        logNotifier.onLogAdd(log);
+                    }
                 }
             }
         };
@@ -177,8 +179,11 @@ public class XLog {
 
     static void clearLog(){
         logStore.clear();
-        if(null != logNotifier){
-            logNotifier.onLogClear();
+        if(wrNotifier != null){
+            LogNotifier logNotifier = wrNotifier.get();
+            if(logNotifier != null){
+                logNotifier.onLogClear();
+            }
         }
     }
 
@@ -190,7 +195,7 @@ public class XLog {
     }
 
     static void setLogNotifier(LogNotifier logNotifier) {
-        XLog.logNotifier = logNotifier;
+        XLog.wrNotifier = new WeakReference<>(logNotifier);
     }
 
 

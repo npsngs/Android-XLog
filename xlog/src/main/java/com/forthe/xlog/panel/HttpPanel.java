@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -104,7 +105,11 @@ class HttpPanel extends PanelBase implements View.OnClickListener{
 
         try{
             Uri uri = Uri.parse(url);
-            host_url = String.format("%s://%s%s",uri.getScheme(),uri.getAuthority(),uri.getPath());
+            if(url.contains("?")){
+                host_url = url.substring(0, url.lastIndexOf("?"));
+            }else{
+                host_url = url;
+            }
             et_host.setText(host_url);
             Set<String> keys = uri.getQueryParameterNames();
             if(null != keys && !keys.isEmpty()){
@@ -518,7 +523,7 @@ class HttpPanel extends PanelBase implements View.OnClickListener{
                     StringBuilder params = new StringBuilder();
                     for(KeyValuePair pair:pairs){
                         if(pair.isValid()){
-                            params.append(pair.key).append("=").append(pair.value).append("&");
+                            params.append(URLEncoder.encode(pair.key, "utf-8")).append("=").append(URLEncoder.encode(pair.value, "utf-8")).append("&");
                         }
                     }
                     if(params.length() > 0){
