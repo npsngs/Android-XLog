@@ -1,1 +1,1 @@
-include ':app', ':xlog'
+include ':test_app', ':xlog'
