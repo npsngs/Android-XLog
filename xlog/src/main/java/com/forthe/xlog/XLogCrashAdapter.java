@@ -70,7 +70,7 @@ class XLogCrashAdapter extends Adapter<XLogCrashAdapter.FileEntry> {
                         }
                     };
 
-                    Pattern pattern = Pattern.compile("\\.([\\w]+?)(:|$)");
+                    Pattern pattern = Pattern.compile("[\\.\\$]([\\w]+?)(:|$)");
 
                     for(FileEntry fileEntry:fileEntries){
                         try {

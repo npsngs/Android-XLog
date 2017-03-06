@@ -546,8 +546,21 @@ class HttpPanel extends PanelBase implements View.OnClickListener{
         sb.append("\n[<<response]\n");
 
         conn.connect();
-
         map = conn.getHeaderFields();
+        if(null == map || map.isEmpty()){
+            sb.append("Request Failed ");
+            try {
+                sb.append(conn.getResponseCode()).append("\t")
+                  .append(conn.getResponseMessage()).append("\n");
+            }catch (Exception e){
+                sb.append("\n");
+            }
+
+            response.result = sb.toString();
+            return response;
+        }
+
+
         keys = map.keySet();
         for(String key:keys){
             if(!TextUtils.isEmpty(key)){
@@ -566,35 +579,43 @@ class HttpPanel extends PanelBase implements View.OnClickListener{
 
 
         try{
-            String contentType = conn.getContentType();
-            if(!TextUtils.isEmpty(contentType)){
-                if(contentType.matches("image[\\w\\W]*")){
-                    response.isText = false;
-                }
-            }
-
             InputStream is = conn.getInputStream();
-            if(response.isText){
-                BufferedReader br = new BufferedReader(new InputStreamReader(is));
-                String line;
-                while ((line = br.readLine()) != null) {
-                    sb.append(line).append("\n");
-                }
-                br.close();
-            }else{
+
+            String contentType = conn.getContentType().toLowerCase();
+            if(contentType.contains("text")
+                || contentType.contains("json")
+                || contentType.contains("xml")
+                || contentType.contains("html")){
+                    response.isText = true;
+                    BufferedReader br = new BufferedReader(new InputStreamReader(is));
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        sb.append(line).append("\n");
+                        if(sb.length() > 2097152){//limit 2MB
+                            sb.append("\n[ More data is ignore ... ]\n");
+                            break;
+                        }
+                    }
+                    br.close();
+            } else if(contentType.contains("image")
+                    ||contentType.contains("png")
+                    ||contentType.contains("jpg")
+                    ||contentType.contains("jpeg")) {
+                response.isText = false;
                 Bitmap bitmap = BitmapFactory.decodeStream(is);
                 sb.append("Image  W:").append(bitmap.getWidth()).append("  H:").append(bitmap.getHeight());
                 response.extras = bitmap;
+            }else{
+                response.isText = true;
+                sb.append("Data Not Parse");
             }
+
             is.close();
         }catch (Exception e){
             sb.append(e.getMessage());
         }
 
-
         response.result = sb.toString();
-
-
         return response;
     }
 
