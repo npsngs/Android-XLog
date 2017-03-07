@@ -7,10 +7,10 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.forthe.xlog.core.LogNotifier;
+import com.forthe.xlog.core.ToStr;
+import com.forthe.xlog.frame.ToStrImp;
 
 import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +25,7 @@ public class XLog {
     private static WeakReference<LogNotifier> wrNotifier;
     private static XLogStore logStore;
     private static XLogConfig config;
+    private static ToStr toStr;
     private static boolean hasInit = false;
     public static boolean isActivated(){
         if(null != config){
@@ -41,6 +42,7 @@ public class XLog {
         if(hasInit){
             return;
         }
+        toStr = new ToStrImp();
         config = new XLogConfig(context) {
             @Override
             protected void onConfigChange() {
@@ -97,68 +99,59 @@ public class XLog {
 
 
 
-    public static void d(String log){
+    public static void d(Object log){
         d("", log);
     }
 
-    public static void d(String tag, String log){
-        if(config.isDebugON() && !TextUtils.isEmpty(log)){
-            addLog("D",tag,log);
+    public static void d(String tag, Object log){
+        if(config.isDebugON()){
+            String logStr = toStr.toStr(log);
+            addLog("D",tag,logStr);
             if(config.isLogcatON()){
-                Log.d(tag,log);
+                Log.d(tag,logStr);
             }
         }
     }
 
-    public static void i(String log){
+    public static void i(Object log){
         i("", log);
     }
 
-    public static void i(String tag, String log){
-        if(config.isDebugON() && !TextUtils.isEmpty(log)){
-            addLog("I",tag,log);
+    public static void i(String tag, Object log){
+        if(config.isDebugON()){
+            String logStr = toStr.toStr(log);
+            addLog("I",tag,logStr);
             if(config.isLogcatON()){
-                Log.d(tag,log);
+                Log.d(tag,logStr);
             }
         }
     }
 
-    public static void e(Throwable t){
-        StringWriter sw = new StringWriter();
-        t.printStackTrace(new PrintWriter(sw));
-        String log = sw.toString();
-        e(log);
-    }
 
-    public static void w(Throwable t){
-        StringWriter sw = new StringWriter();
-        t.printStackTrace(new PrintWriter(sw));
-        String log = sw.toString();
-        w(log);
-    }
-
-    public static void w(String log){
+    public static void w(Object log){
         w("", log);
     }
 
-    public static void w(String tag, String log){
-        if(config.isWarnON() && !TextUtils.isEmpty(log)){
-            addLog("W",tag,log);
+    public static void w(String tag, Object log){
+        if(config.isWarnON()){
+            String logStr = toStr.toStr(log);
+            addLog("W",tag,logStr);
             if(config.isLogcatON()){
-                Log.w(tag,log);
+                Log.w(tag,logStr);
             }
         }
     }
 
-    public static void e(String log){
+    public static void e(Object log){
         e("", log);
     }
 
-    public static void e(String tag, String log){
-        if(config.isErrorON() && !TextUtils.isEmpty(log)){
-            addLog("E",tag,log);
+    public static void e(String tag, Object log){
+        if(config.isErrorON()){
+            String logStr = toStr.toStr(log);
+            addLog("E",tag,logStr);
             if(config.isLogcatON()){
-                Log.e(tag,log);
+                Log.e(tag,logStr);
             }
         }
     }

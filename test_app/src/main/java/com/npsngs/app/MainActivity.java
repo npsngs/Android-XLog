@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.TextView;
 
 
 import com.forthe.xlog.XLog;
@@ -13,13 +15,20 @@ import com.forthe.xlog.XLog;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 
 public class MainActivity extends Activity implements View.OnClickListener{
+    View v;
+    MainActivity activity;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        v = findViewById(R.id.btn_open);
         findViewById(R.id.btn_open).setOnClickListener(this);
         findViewById(R.id.btn_sendLog).setOnClickListener(this);
         findViewById(R.id.btn_crash1).setOnClickListener(this);
@@ -33,8 +42,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
         XLog.init(this, getSaveDir());
         XLog.addSwitchItem("isTest");
         XLog.i("start main");
-        int[][] a = new int[][]{{1, 2}, {3, 4}, {5, 6}};
-        XLog.d(a.getClass().getCanonicalName());
+        activity = this;
     }
 
     private String getSaveDir(){
@@ -69,12 +77,38 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
+
+                List<String> ss = new ArrayList<>();
+                ss.add(null);
+                ss.add("ssdd");
+                ss.add("null");
+                ss.add("ssjhhjjj");
+                ss.add("ppppppppp");
+                XLog.d(ss);
+
+                Map<String,String> maps = new HashMap<>();
+                maps.put("a","nullable");
+                maps.put("ab","ss");
+                maps.put("aa","sskjk");
+                maps.put("ac",null);
+                maps.put("af","null");
+                maps.put(null,"aa");
+                maps.put("ad","nnnnull");
+                XLog.d(maps);
+                XLog.d(this);
+
+                Object[][][] ab = new Object[][][]{
+                        {null,{2,3.0f,this,6.7897f}},{{4.123f,5,this,1.23f},{3,new TextView(this),5,8.9f}}
+                };
+                XLog.d(ab);
+                XLog.d(ab[0]);
+                XLog.d(ab[0][1]);
                 break;
             case R.id.btn_crash1:
                 try{
                     int a = 0/0;
                 }catch (Throwable t){
-                    XLog.w(t);
                     XLog.e(t);
                 }
                 break;
@@ -152,7 +186,11 @@ public class MainActivity extends Activity implements View.OnClickListener{
     }
 
     private boolean isTestON = false;
-
+    ATest aTest = new ATest();
+    class ATest{
+        String a = "xx";
+        Handler handler = new Handler();
+    }
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if(keyCode == event.KEYCODE_VOLUME_UP){

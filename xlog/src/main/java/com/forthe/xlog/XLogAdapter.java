@@ -7,11 +7,12 @@ import com.forthe.xlog.core.Container;
 import com.forthe.xlog.frame.XLogNotifier;
 import com.forthe.xlog.view.LogAdapter;
 
-class XLogAdapter extends LogAdapter{
+class XLogAdapter extends LogAdapter {
+    private XLogNotifier logNotifier;
     XLogAdapter(Context mContext, Container container) {
         super(mContext, container);
         setData(XLog.getLogs());
-        XLog.setLogNotifier(new XLogNotifier() {
+        logNotifier = new XLogNotifier() {
             @Override
             protected void onNotifyLogAdd(String log) {
                 addData(log);
@@ -21,7 +22,8 @@ class XLogAdapter extends LogAdapter{
             protected void onNotifyLogClear() {
                 clear();
             }
-        });
+        };
+        XLog.setLogNotifier(logNotifier);
     }
 
     @Override
