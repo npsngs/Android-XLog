@@ -4,6 +4,7 @@ import android.util.Log;
 import com.forthe.xlog.core.ToStr;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
@@ -12,10 +13,10 @@ import java.util.Set;
 public class ToStrImp implements ToStr{
     @Override
     public String toStr(Object o){
-        return toStr(o, 1, 0);
+        return toStr(o, 2, 0, true);
     }
 
-    public String toStr(Object o, int maxDepth, int curDepth) {
+    private String toStr(Object o, int maxDepth, int curDepth, boolean isBreak) {
         try {
             if(null == o){
                 return "null";
@@ -32,7 +33,7 @@ public class ToStrImp implements ToStr{
             }else if(o instanceof Throwable){
                 return Log.getStackTraceString((Throwable) o);
             }else{
-                return printBean(o, maxDepth, curDepth);
+                return printBean(o, maxDepth, curDepth, isBreak);
             }
         }catch (StackOverflowError error){
             return "Too Large...";
@@ -52,7 +53,7 @@ public class ToStrImp implements ToStr{
         if(collection.size() > 0){
             sb.append(" [\n");
             for (Object item:collection){
-                sb.append(" ").append(toStr(item,maxDepth,curDepth+1)).append(",\n");
+                sb.append(" ").append(toStr(item,maxDepth,curDepth+1, false)).append(",\n");
             }
             if(sb.length()>2){
                 sb.delete(sb.length()-2, sb.length());
@@ -86,16 +87,17 @@ public class ToStrImp implements ToStr{
         return sb.toString();
     }
 
-    private String printBean(Object bean, int maxDepth, int curDepth){
+    private String printBean(Object bean, int maxDepth, int curDepth, boolean isBreak){
         if(curDepth >= maxDepth){
             return bean.getClass().getSimpleName();
         }
 
+        String suffix = isBreak?",\n":", ";
         Class<?> classObj = bean.getClass();
         String ts = bean.toString();
         if(ts.startsWith(classObj.getName()+'@')){
             StringBuilder sb = new StringBuilder();
-            sb.append(classObj.getSimpleName()).append("{");
+            sb.append(classObj.getSimpleName()).append(isBreak?"{\n":"{");
             Field[] fields = classObj.getDeclaredFields();
             if(fields == null){
                 sb.append("empty");
@@ -104,21 +106,31 @@ public class ToStrImp implements ToStr{
                     if("this$0".equals(field.getName())){
                         continue;
                     }
+
+                    int modifiers = field.getModifiers();
+                    if ((modifiers & (Modifier.STATIC|Modifier.FINAL)) == (Modifier.STATIC|Modifier.FINAL)) {
+                        continue;
+                    }
+
                     field.setAccessible(true);
                     try {
                         Object value = field.get(bean);
-                        String valueStr = bean.equals(value)?"@this":toStr(value,maxDepth,curDepth+1);
-                        sb.append(field.getName()).append("=").append(valueStr).append(", ");
+                        if(field.getType().isPrimitive()){
+                            sb.append(isBreak?"\t":"").append(field.getName()).append("=").append(null == value?"null":value).append(suffix);
+                        }else{
+                            String valueStr = bean.equals(value)?"@this":toStr(value,maxDepth,curDepth+1, false);
+                            sb.append(isBreak?"\t":"").append(field.getName()).append("=").append(valueStr).append(suffix);
+                        }
                     } catch (IllegalAccessException e) {
                     }
                 }
 
 
-                if(' ' == sb.charAt(sb.length()-1)){
+                if((isBreak?'\n':' ') == sb.charAt(sb.length()-1)){
                     sb.delete(sb.length()-2,sb.length());
                 }
             }
-            sb.append("}");
+            sb.append(isBreak?"\n}":"}");
             return sb.toString();
         }else{
             return ts;
@@ -132,7 +144,7 @@ public class ToStrImp implements ToStr{
 
         StringBuilder sb = new StringBuilder();
         String str = array.toString();
-        char type = 'X';
+        char type = 's';
         int dimension = 0;
         for (int i = 0; i < str.length(); i++) {
             if (str.charAt(i) == '[') {
@@ -211,7 +223,7 @@ public class ToStrImp implements ToStr{
                     Object[] objects = (Object[]) array;
                     sb.append("[");
                     for (int i = 0; i < objects.length; ++i) {
-                        sb.append(printBean(objects[i], 1, 0));
+                        sb.append(printBean(objects[i], 1, 0, false));
                         if (i != objects.length - 1) {
                             sb.append(",");
                         }
