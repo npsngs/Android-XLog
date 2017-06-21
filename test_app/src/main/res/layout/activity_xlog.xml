@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_xlog"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
+    tools:context="com.npsngs.app.XlogActivity">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/btn_open"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="DDEbug" />
+
+        <Button
+            android:id="@+id/btn_sendLog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Send Log" />
+
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/btn_crash1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Crash1" />
+        <Button
+            android:id="@+id/btn_crash2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Crash2" />
+        <Button
+            android:id="@+id/btn_crash3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Crash3" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/btn_start_test"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Start Test" />
+
+        <Button
+            android:id="@+id/btn_stop_test"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Stop Test" />
+        <Button
+            android:id="@+id/btn_start_activity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="start new" />
+    </LinearLayout>
+</LinearLayout>
