@@ -9,7 +9,7 @@ public class URLParser implements LogParser {
     private Pattern pattern;
     public URLParser() {
         //((?!abc).)*  的意思就是匹配  不含abc的字符(?!abc) 跟 任意字符. 的组合，出现任何次*
-        pattern = Pattern.compile("http://((?!,\\s|,http|\\s|\\]|\\)|\\}|'|\").)+");
+        pattern = Pattern.compile("(http|https)://((?!,\\s|,http|\\s|\\]|\\)|\\}|'|\").)+");
     }
 
     @Override
