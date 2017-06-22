@@ -20,7 +20,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".XlogActivity"/>
-        <activity android:name=".DownloadCoreActivity"/>
+        <activity android:name=".DownloaderActivity"/>
+        <activity android:name=".AntiEmulatorActivity"/>
     </application>
 
 </manifest>

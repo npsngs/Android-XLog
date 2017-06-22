@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.forthe.download.Downloader;
 
-public class DownloadCoreActivity extends Activity{
+public class DownloaderActivity extends Activity{
 //    String url = "http://a5.pc6.com/pc6_soure/2016-2/UVlEK7Qrz68Y8Pv2.apk";
 //    String url = "https://qd.myapp.com/myapp/qqteam/AndroidQQ/mobileqq_android.apk";
 //    String url = "http://116.224.86.18/apk.r1.market.hiapk.com/data/upload/apkres/2017/6_16/14/com.tencent.tmgp.sgame_025315.apk?wsiphost=local";
@@ -53,7 +53,7 @@ public class DownloadCoreActivity extends Activity{
 
         @Override
         public void onDebug(String debugMsg) {
-            DownloadCoreActivity.this.debugMsg = debugMsg;
+            DownloaderActivity.this.debugMsg = debugMsg;
             update();
         }
 
@@ -61,44 +61,44 @@ public class DownloadCoreActivity extends Activity{
         @Override
         public void onStart(long offsetByte, long totalByte) {
             isStart = true;
-            DownloadCoreActivity.this.completeSize = offsetByte;
-            DownloadCoreActivity.this.totalSize = totalByte;
+            DownloaderActivity.this.completeSize = offsetByte;
+            DownloaderActivity.this.totalSize = totalByte;
             update();
         }
 
         @Override
         public void onFinish(long totalByte) {
             isStart = false;
-            DownloadCoreActivity.this.debugMsg = "finished";
-            DownloadCoreActivity.this.completeSize = totalByte;
+            DownloaderActivity.this.debugMsg = "finished";
+            DownloaderActivity.this.completeSize = totalByte;
             update();
         }
 
         @Override
         public void onError(int errorCode) {
             isStart = false;
-            DownloadCoreActivity.this.errorCode = errorCode;
+            DownloaderActivity.this.errorCode = errorCode;
             update();
         }
 
         @Override
         public void onProgress(long completeSize, long totalSize) {
-            DownloadCoreActivity.this.completeSize = completeSize;
-            DownloadCoreActivity.this.totalSize = totalSize;
+            DownloaderActivity.this.completeSize = completeSize;
+            DownloaderActivity.this.totalSize = totalSize;
             update();
         }
 
         @Override
         public void onStop(long offset) {
-            DownloadCoreActivity.this.completeSize = offset;
-            DownloadCoreActivity.this.debugMsg = "stopped";
+            DownloaderActivity.this.completeSize = offset;
+            DownloaderActivity.this.debugMsg = "stopped";
             isStart = false;
             update();
         }
 
         @Override
         public void onSpeedChange(float bytesPerSec) {
-            DownloadCoreActivity.this.bytesPerSec = bytesPerSec;
+            DownloaderActivity.this.bytesPerSec = bytesPerSec;
             update();
         }
     }

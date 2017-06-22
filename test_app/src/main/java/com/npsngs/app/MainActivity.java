@@ -33,7 +33,9 @@ public class MainActivity extends Activity {
             super(mContext);
             List<Page> pages = new ArrayList<>();
             pages.add(new Page("XLog", XlogActivity.class));
-            pages.add(new Page("DownloadCore", DownloadCoreActivity.class));
+            pages.add(new Page("Downloader", DownloaderActivity.class));
+            pages.add(new Page("ImageLoader", ImageLoaderActivity.class));
+            pages.add(new Page("AntiEmulator", AntiEmulatorActivity.class));
             setData(pages);
         }
 

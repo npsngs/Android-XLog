@@ -1,1 +1,1 @@
-include ':test_app', ':xlog', ':xhttp', ':download'
+include ':test_app', ':xlog', ':xhttp', ':download', ':imageloader', ':tool'
