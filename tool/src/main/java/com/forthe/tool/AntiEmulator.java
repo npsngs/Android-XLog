@@ -2,6 +2,7 @@ package com.forthe.tool;
 
 import android.app.Service;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Vibrator;
 import android.text.TextUtils;
@@ -21,8 +22,8 @@ public class AntiEmulator {
         raters = new ArrayList<>();
         raters.add(new ThermalRater());
         raters.add(new DeviceInfoRater());
+        raters.add(new PackageRater());
     }
-
 
     public boolean isOnEmulator(Context context){
         Score score = new Score(100);
@@ -236,6 +237,37 @@ public class AntiEmulator {
             e.printStackTrace();
         }
         return bool;
+    }
+
+    class PackageRater implements Rater{
+
+        @Override
+        public void rate(Context context, Score score) {
+            if(checkPackage(context, "de.robv.android.xposed.installer")){
+                score.deduct(65, "installed xposed");
+            }
+
+            if(checkPackage(context, "com.virtualdroid.kit")){
+                score.deduct(80, "installed zhuoshi");
+            }
+        }
+
+        /**
+         * 检测该包名所对应的应用是否存在
+         * @param packageName
+         * @return
+         */
+        public boolean checkPackage(Context context, String packageName)
+        {
+            if (packageName == null || "".equals(packageName))
+                return false;
+            try{
+                context.getPackageManager().getApplicationInfo(packageName, PackageManager.GET_ACTIVITIES);
+                return true;
+            }catch (PackageManager.NameNotFoundException e){
+                return false;
+            }
+        }
     }
 
 }
